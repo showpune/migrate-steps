@@ -1,0 +1,436 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an AI programming assistant.\nWhen asked for your name, you must respond with \"GitHub Copilot\".\nFollow the user's requirements carefully & to the letter.\nFollow Microsoft content policies.\nAvoid content that violates copyrights.\nIf you are asked to generate content that is harmful, hateful, racist, sexist, lewd, violent, or completely irrelevant to software engineering, only respond with \"Sorry, I can't assist with that.\"\nKeep your answers short and impersonal."
+    },
+    {
+      "role": "user",
+      "content": "<instructions>\nYou are a highly sophisticated automated coding agent with expert-level knowledge across many different programming languages and frameworks.\nThe user will ask a question, or ask you to perform a task, and it may require lots of research to answer correctly. There is a selection of tools that let you perform actions or retrieve helpful context to answer the user's question.\nIf you can infer the project type (languages, frameworks, and libraries) from the user's query or the context that you have, make sure to keep them in mind when making changes.\nIf the user wants you to implement a feature and they have not specified the files to edit, first break down the user's request into smaller concepts and think about the kinds of files you need to grasp each concept.\nIf you aren't sure which tool is relevant, you can call multiple tools. You can call tools repeatedly to take actions or gather as much context as needed until you have completed the task fully. Don't give up unless you are sure the request cannot be fulfilled with the tools you have. It's YOUR RESPONSIBILITY to make sure that you have done all you can to collect necessary context.\nPrefer using the semantic_search tool to search for context unless you know the exact string or filename pattern you're searching for.\nDon't make assumptions about the situation- gather context first, then perform the task or answer the question.\nThink creatively and explore the workspace in order to make a complete fix.\nDon't repeat yourself after a tool call, pick up where you left off.\nNEVER print out a codeblock with file changes unless the user asked for it. Use the edit_file tool instead.\nNEVER print out a codeblock with a terminal command to run unless the user asked for it. Use the run_in_terminal tool instead.\nYou don't need to read a file if it's already provided in context.\n</instructions>\n<toolUseInstructions>\nWhen using a tool, follow the json schema very carefully and make sure to include ALL required properties.\nAlways output valid JSON when using a tool.\nIf a tool exists to do a task, use the tool instead of asking the user to manually take an action.\nIf you say that you will take an action, then go ahead and use the tool to do it. No need to ask permission.\nNever use multi_tool_use.parallel or any tool that does not exist. Use tools using the proper procedure, DO NOT write out a json codeblock with the tool inputs.\nNever say the name of a tool to a user.\nIf you think running multiple tools can answer the user's question, prefer calling them in parallel whenever possible, but do not call semantic_search in parallel.\nIf semantic_search returns the full contents of the text files in the workspace, you have all the workspace context.\nDon't call the run_in_terminal tool multiple times in parallel. Instead, run one command and wait for the output before running the next command.\nAfter you have performed the user's task, if the user corrected something you did, expressed a coding preference, or communicated a fact that you need to remember, use the update_user_preferences tool to save their preferences.\n\n</toolUseInstructions>\n<editFileInstructions>\nDon't try to edit an existing file without reading it first, so you can make changes properly.\nUse the edit_file tool to edit files. When editing files, group your changes by file.\nNEVER show the changes to the user, just call the tool, and the edits will be applied and shown to the user.\nNEVER print a codeblock that represents a change to a file, use edit_file instead.\nFor each file, give a short description of what needs to be changed, then use the edit_file tool. You can use any tool multiple times in a response, and you can keep writing text after using a tool.\nFollow best practices when editing files. If a popular external library exists to solve a problem, use it and properly install the package e.g. with \"npm install\" or creating a \"requirements.txt\".\nAfter editing a file, you MUST call get_errors to validate the change. Fix the errors if they are relevant to your change or the prompt, and remember to validate that they were actually fixed.\nThe edit_file tool is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The tool prefers that you are as concise as possible. For example:\n// ...existing code...\nchanged code\n// ...existing code...\nchanged code\n// ...existing code...\n\nHere is an example of how you should format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}\n</editFileInstructions>"
+    },
+    {
+      "role": "user",
+      "content": "<context>\nMy current OS is: Windows\nI am working in a workspace with the following folders:\n- c:\\projects\\eventostec-backend\nI am working in a workspace that has the following structure:\n```\ndocker-compose.yml\nDockerfile\nmvnw\nmvnw.cmd\npom.xml\nREADME.md\nsrc/\n\tmain/\n\t\tjava/\n\t\t\tcom/\n\t\t\t\teventostec/\n\t\t\t\t\tapi/\n\t\t\t\t\t\t...\n\t\tresources/\n\t\t\tapplication.properties\n\t\t\tdb/\n\t\t\t\tmigration/\n\t\t\t\t\tV1__create-event-table.sql\n\t\t\t\t\tV2__create-table-coupon.sql\n\t\t\t\t\tV3__create-table-address.sql\n\t\t\t\t\tV4__alter-table-event.sql\n\t\t\t\t\tV5__clear-prod-db.sql\n\t\t\t\t\tV6__alter-table-event.sql\n\ttest/\n\t\tjava/\n\t\t\tcom/\n\t\t\t\teventostec/\n\t\t\t\t\tapi/\n\t\t\t\t\t\t...\n\t\tresources/\n\t\t\tapplication-test.properties\ntarget/\n\tclasses/\n\t\tapplication.properties\n\t\tcom/\n\t\t\teventostec/\n\t\t\t\tapi/\n\t\t\t\t\tApiApplication.class\n\t\t\t\t\tconfig/\n\t\t\t\t\tcontroller/\n\t\t\t\t\tdomain/\n\t\t\t\t\texceptions/\n\t\t\t\t\tmappers/\n\t\t\t\t\trepositories/\n\t\t\t\t\tservice/\n\t\t\t\t\tutils/\n\t\tdb/\n\t\t\tmigration/\n\t\t\t\tV1__create-event-table.sql\n\t\t\t\tV2__create-table-coupon.sql\n\t\t\t\tV3__create-table-address.sql\n\t\t\t\tV4__alter-table-event.sql\n\t\t\t\tV5__clear-prod-db.sql\n\t\t\t\tV6__alter-table-event.sql\n\tgenerated-sources/\n\t\tannotations/\n\tgenerated-test-sources/\n\t\ttest-annotations/\n\tjacoco.exec\n\tmaven-status/\n\t\tmaven-compiler-plugin/\n\t\t\tcompile/\n\t\t\t\tdefault-compile/\n\t\t\t\t\tcreatedFiles.lst\n\t\t\t\t\tinputFiles.lst\n\t\t\ttestCompile/\n\t\t\t\tdefault-testCompile/\n\t\t\t\t\tcreatedFiles.lst\n\t\t\t\t\tinputFiles.lst\n\tsurefire-reports/\n\t\tcom.eventostec.api.ApiApplicationTests.txt\n\t\tcom.eventostec.api.controller.CouponControllerTest.txt\n\t\tcom.eventostec.api.controller.EventControllerTest.txt\n\t\tcom.eventostec.api.service.AddressServiceTest.txt\n\t\tcom.eventostec.api.service.CouponServiceTest.txt\n\t\tcom.eventostec.api.service.EventServiceTest.txt\n\t\tTEST-com.eventostec.api.ApiApplicationTests.xml\n\t\tTEST-com.eventostec.api.controller.CouponControllerTest.xml\n\t\tTEST-com.eventostec.api.controller.EventControllerTest.xml\n\t\tTEST-com.eventostec.api.service.AddressServiceTest.xml\n\t\tTEST-com.eventostec.api.service.CouponServiceTest.xml\n\t\tTEST-com.eventostec.api.service.EventServiceTest.xml\n\ttest-classes/\n\t\tapplication-test.properties\n\t\tcom/\n\t\t\teventostec/\n\t\t\t\tapi/\n\t\t\t\t\tApiApplicationTests.class\n\t\t\t\t\tcontroller/\n\t\t\t\t\tservice/\n```\nThis view of the workspace structure may be truncated. You can use tools to collect more context if needed.\n</context>\n<file>\n```xml\n<!-- filepath: c:\\projects\\eventostec-backend\\pom.xml -->\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n\t\t xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r\n\t<modelVersion>4.0.0</modelVersion>\r\n\t<parent>\r\n\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t<artifactId>spring-boot-starter-parent</artifactId>\r\n\t\t<version>3.3.4</version>\r\n\t\t<relativePath/>\r\n\t</parent>\r\n\t<groupId>com.eventostec</groupId>\r\n\t<artifactId>api</artifactId>\r\n\t<version>0.0.1-SNAPSHOT</version>\r\n\t<name>api</name>\r\n\t<description>Backend for eventos tec</description>\r\n\t<properties>\r\n\t\t<java.version>21</java.version>\r\n\t\t<mapstruct.version>1.4.2.Final</mapstruct.version>\r\n\t\t<mapstruct-lombok.version>0.2.0</mapstruct-lombok.version>\r\n\t</properties>\r\n\t<dependencies>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-data-jpa</artifactId>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-web</artifactId>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-validation</artifactId>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-devtools</artifactId>\r\n\t\t\t<scope>runtime</scope>\r\n\t\t\t<optional>true</optional>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.postgresql</groupId>\r\n\t\t\t<artifactId>postgresql</artifactId>\r\n\t\t\t<scope>runtime</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.projectlombok</groupId>\r\n\t\t\t<artifactId>lombok</artifactId>\r\n\t\t\t<optional>true</optional>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-test</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.flywaydb</groupId>\r\n\t\t\t<artifactId>flyway-core</artifactId>\r\n\t\t\t<version>9.8.1</version>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>com.h2database</groupId>\r\n\t\t\t<artifactId>h2</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.mockito</groupId>\r\n\t\t\t<artifactId>mockito-core</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.mockito</groupId>\r\n\t\t\t<artifactId>mockito-junit-jupiter</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>software.amazon.awssdk</groupId>\r\n\t\t\t<artifactId>s3</artifactId>\r\n\t\t\t<version>2.26.7</version>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.mapstruct</groupId>\r\n\t\t\t<artifactId>mapstruct</artifactId>\r\n\t\t\t<version>${mapstruct.version}</version>\r\n\t\t</dependency>\r\n\t</dependencies>\r\n\r\n\t<build>\r\n\t\t<plugins>\r\n\t\t\t<plugin>\r\n\t\t\t\t<groupId>org.apache.maven.plugins</groupId>\r\n\t\t\t\t<artifactId>maven-compiler-plugin</artifactId>\r\n\t\t\t\t<version>3.13.0</version>\r\n\t\t\t\t<configuration>\r\n\t\t\t\t\t<source>21</source>\r\n\t\t\t\t\t<target>21</target>\r\n\t\t\t\t</configuration>\r\n\t\t\t</plugin>\r\n\t\t\t<plugin>\r\n\t\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t\t<artifactId>spring-boot-maven-plugin</artifactId>\r\n\t\t\t\t<configuration>\r\n\t\t\t\t\t<excludes>\r\n\t\t\t\t\t\t<exclude>\r\n\t\t\t\t\t\t\t<groupId>org.projectlombok</groupId>\r\n\t\t\t\t\t\t\t<artifactId>lombok</artifactId>\r\n\t\t\t\t\t\t</exclude>\r\n\t\t\t\t\t</excludes>\r\n\t\t\t\t</configuration>\r\n\t\t\t</plugin>\r\n\t\t\t<plugin>\r\n\t\t\t\t<groupId>org.jacoco</groupId>\r\n\t\t\t\t<artifactId>jacoco-maven-plugin</artifactId>\r\n\t\t\t\t<version>0.8.11</version>\r\n\t\t\t\t<executions>\r\n\t\t\t\t\t<execution>\r\n\t\t\t\t\t\t<goals>\r\n\t\t\t\t\t\t\t<goal>prepare-agent</goal>\r\n\t\t\t\t\t\t</goals>\r\n\t\t\t\t\t</execution>\r\n\t\t\t\t\t<execution>\r\n\t\t\t\t\t\t<id>report</id>\r\n\t\t\t\t\t\t<phase>verify</phase>\r\n\t\t\t\t\t\t<goals>\r\n\t\t\t\t\t\t\t<goal>report</goal>\r\n\t\t\t\t\t\t</goals>\r\n\t\t\t\t\t</execution>\r\n\t\t\t\t</executions>\r\n\t\t\t\t<configuration>\r\n\t\t\t\t\t<outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>\r\n\t\t\t\t</configuration>\r\n\t\t\t</plugin>\r\n\t\t</plugins>\r\n\t</build>\r\n</project>\n```\n</file>\n\n<reminder>\nWhen using the edit_file tool, avoid repeating existing code, instead use a line comment with `...existing code...` to represent regions of unchanged code.\n</reminder>\n<prompt>\nmigrate from S3 storage account to azure storage account\n</prompt>"
+    },
+    {
+      "role": "assistant",
+      "content": "I'll help you migrate from AWS S3 to Azure Storage Account. Let me start by getting the migration guidelines.",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "migration-guideline",
+            "arguments": "{\"from\": \"s3\", \"to\": \"azure-storage\", \"migrateScenario\": \"migration from s3 to azure storage account\"}"
+          },
+          "id": "toolu_bdrk_014cQnvbTdXH3XiDpKp6F6YW",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "There are several steps to complete scenario migration from s3 to azure storage account \n1) Update the dependency files: Find the java dependency file in the project, include the pom.xml or gradle settings, update the dependency for scenario migration from s3 to azure storage account from s3 to azure-storage\n 2) Update the Java Code: Search the java code in the whole project if any code is using the API from s3, if yes, replace it with azure-storage \n 3) Update the configuration code:  Check the configuration files in the project, normally it is properties/yaml/yml files, check if it is still using the configuration of s3, if yes, replace it with the configuration of azure-storage  \n 5) Try the above steps multiple time and make sure all the code related with  s3 \n  is changed to azure-storage6) Compile the code and fix the build error",
+      "tool_call_id": "toolu_bdrk_014cQnvbTdXH3XiDpKp6F6YW"
+    },
+    {
+      "role": "assistant",
+      "content": "I'll help you migrate from AWS S3 to Azure Storage Account. Let's proceed step by step.\n\nFirst, let's search for any S3-related code in the project to understand what needs to be changed.",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "semantic_search",
+            "arguments": "{\"query\": \"AWS S3 storage configuration or implementation\"}"
+          },
+          "id": "toolu_bdrk_01LcjtHuj7hnJTrDuejxLkNF",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "Here is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/config/AWSConfig.java` starting at line 0:\n```java\npackage com.eventostec.api.config;\n\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport software.amazon.awssdk.auth.credentials.AwsBasicCredentials;\nimport software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;\nimport software.amazon.awssdk.regions.Region;\nimport software.amazon.awssdk.services.s3.S3Client;\nimport software.amazon.awssdk.services.s3.S3ClientBuilder;\n\n@Configuration\npublic class AWSConfig {\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/config/AWSConfig.java` starting at line 11:\n```java\n/*...*/\n@Configuration\npublic class AWSConfig {\n\n    @Value(\"${aws.region}\")\n    private String awsRegion;\n    @Value(\"${aws.accessKey:}\")\n    private String accessKeyId;\n    @Value(\"${aws.secretKey:}\")\n    private String secretAccessKey;\n\n    @Bean\n    public S3Client createS3Instance() {\n        S3ClientBuilder s3ClientBuilder = S3Client.builder()\n                .region(Region.of(awsRegion));\n\n        if (accessKeyId != null && !accessKeyId.isEmpty() &&\n                secretAccessKey != null && !secretAccessKey.isEmpty()) {\n            s3ClientBuilder.credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretAccessKey)));\n        }\n\n        return s3ClientBuilder.build();\n    }\n}\n```",
+      "tool_call_id": "toolu_bdrk_01LcjtHuj7hnJTrDuejxLkNF"
+    },
+    {
+      "role": "assistant",
+      "content": "I found an AWS S3 configuration file in the project. Let me search for more S3-related code to understand the full scope of the migration.",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "semantic_search",
+            "arguments": "{\"query\": \"S3Client usage storage service implementation\"}"
+          },
+          "id": "toolu_bdrk_01CtZCNQkT3FPZE5UVGbvhXT",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "Here is a potentially relevant text excerpt in `src/test/java/com/eventostec/api/service/AddressServiceTest.java` starting at line 26:\n```java\n/*...*/\nclass AddressServiceTest {\n    /*...*/\n    @BeforeEach\n    void setUp() {\n        MockitoAnnotations.openMocks(this);\n    }\n\n    @Test\n    void test_shouldSaveAddress() {\n        Event event = new Event();\n        event.setId(UUID.randomUUID());\n        EventRequestDTO data = new EventRequestDTO(\"Teste Evento\", \"Descricao Evento\", System.currentTimeMillis(), \"Cidade Teste\", \"UF\", true, \"https://evento.com\", null);\n        Address address = new Address();\n        address.setCity(data.city());\n        address.setUf(data.state());\n        address.setEvent(event);\n\n        when(addressRepository.save(any(Address.class))).thenReturn(address);\n\n        Address savedAddress = addressService.createAddress(data, event);\n\n        assertNotNull(savedAddress);\n        assertEquals(data.city(), savedAddress.getCity());\n        assertEquals(data.state(), savedAddress.getUf());\n        verify(addressRepository, times(1)).save(any(Address.class));\n    }\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 109:\n```java\n/*...*/\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n    /*...*/\n    public void deleteEvent(UUID eventId, String adminKey){\n        if(adminKey == null || !adminKey.equals(this.adminKey)){\n            throw new IllegalArgumentException(\"Invalid admin key\");\n        }\n\n        this.repository.delete(this.repository.findById(eventId)\n                .orElseThrow(() -> new IllegalArgumentException(\"Event not found\")));\n\n    }\n\n    public List<EventResponseDTO> searchEvents(String title){\n        title = (title != null) ? title : \"\";\n\n        List<EventAddressProjection> eventsList = this.repository.findEventsByTitle(title);\n        return eventsList.stream().map(event -> new EventResponseDTO(\n                        event.getId(),\n                        event.getTitle(),\n                        event.getDescription(),\n                        event.getDate(),\n                        event.getCity() != null ? event.getCity() : \"\",\n                        event.getUf() != null ? event.getUf() : \"\",\n                        event.getRemote(),\n                        event.getEventUrl(),\n                        event.getImgUrl())\n                )\n                .toList();\n    }\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 82:\n```java\n/*...*/\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n    /*...*/\n    public EventDetailsDTO getEventDetails(UUID eventId) {\n        Event event = repository.findById(eventId)\n                .orElseThrow(() -> new IllegalArgumentException(\"Event not found\"));\n\n        Optional<Address> address = addressService.findByEventId(eventId);\n\n        List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());\n\n        List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()\n                .map(coupon -> new EventDetailsDTO.CouponDTO(\n                        coupon.getCode(),\n                        coupon.getDiscount(),\n                        coupon.getValid()))\n                .collect(Collectors.toList());\n\n        return new EventDetailsDTO(\n                event.getId(),\n                event.getTitle(),\n                event.getDescription(),\n                event.getDate(),\n                address.isPresent() ? address.get().getCity() : \"\",\n                address.isPresent() ? address.get().getUf() : \"\",\n                event.getImgUrl(),\n                event.getEventUrl(),\n                couponDTOs);\n    }\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 178:\n```java\n/*...*/\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n    /*...*/\n    }\n\n}\n```\n\nHere is a potentially relevant text excerpt in `src/test/java/com/eventostec/api/service/EventServiceTest.java` starting at line 0:\n```java\npackage com.eventostec.api.service;\n\nimport com.eventostec.api.domain.event.*;\nimport com.eventostec.api.repositories.EventRepository;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.mockito.InjectMocks;\nimport org.mockito.Mock;\nimport org.mockito.MockitoAnnotations;\nimport org.springframework.data.domain.Page;\nimport org.springframework.data.domain.PageImpl;\nimport org.springframework.data.domain.PageRequest;\nimport org.springframework.data.domain.Pageable;\nimport org.springframework.test.util.ReflectionTestUtils;\nimport org.springframework.web.multipart.MultipartFile;\nimport software.amazon.awssdk.services.s3.S3Client;\nimport software.amazon.awssdk.services.s3.S3Utilities;\nimport software.amazon.awssdk.services.s3.model.GetUrlRequest;\n\nimport java.net.URI;\nimport java.util.*;\n\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\n\nclass EventServiceTest {\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 180:\n```java\n/*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/test/java/com/eventostec/api/service/CouponServiceTest.java` starting at line 29:\n```java\n/*...*/\nclass CouponServiceTest {\n    /*...*/\n    @BeforeEach\n    void setUp() {\n        MockitoAnnotations.openMocks(this);\n    }\n\n    @Test\n    void test_shouldSaveCoupon() {\n        UUID eventId = UUID.randomUUID();\n        Event event = new Event();\n        event.setId(eventId);\n        CouponRequestDTO couponData = new CouponRequestDTO(\"TESTCODE\", 20, new Date().getTime());\n        Coupon coupon = new Coupon();\n        coupon.setCode(couponData.code());\n        coupon.setDiscount(couponData.discount());\n        coupon.setValid(new Date(couponData.valid()));\n        coupon.setEvent(event);\n\n        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));\n        when(couponRepository.save(any(Coupon.class))).thenReturn(coupon);\n\n        Coupon savedCoupon = couponService.addCouponToEvent(eventId, couponData);\n\n        assertNotNull(savedCoupon);\n        assertEquals(\"TESTCODE\", savedCoupon.getCode());\n        verify(eventRepository, times(1)).findById(eventId);\n        verify(couponRepository, times(1)).save(any(Coupon.class));\n    }\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 48:\n```java\n/*...*/\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n    /*...*/\n    public Event createEvent(EventRequestDTO data) {\n        String imgUrl = \"\";\n\n\n        if (data.image() != null) {\n            imgUrl = this.uploadImg(data.image());\n        }\n        Event newEvent = mapper.toEntity(data, imgUrl);\n        repository.save(newEvent);\n\n        if (Boolean.FALSE.equals(data.remote())) {\n            this.addressService.createAddress(data, newEvent);\n        }\n\n        return newEvent;\n    }\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/config/AWSConfig.java` starting at line 0:\n```java\npackage com.eventostec.api.config;\n\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport software.amazon.awssdk.auth.credentials.AwsBasicCredentials;\nimport software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;\nimport software.amazon.awssdk.regions.Region;\nimport software.amazon.awssdk.services.s3.S3Client;\nimport software.amazon.awssdk.services.s3.S3ClientBuilder;\n\n@Configuration\npublic class AWSConfig {\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/test/java/com/eventostec/api/service/CouponServiceTest.java` starting at line 20:\n```java\n/*...*/\nclass CouponServiceTest {\n\n    @Mock\n    private CouponRepository couponRepository;\n\n    @Mock\n    private EventRepository eventRepository;\n\n    @InjectMocks\n    private CouponService couponService;\n\n    @BeforeEach\n    void setUp() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldSaveCoupon() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldThrowExceptionWhenEventNotFound() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldReturnListOfCoupons() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldReturnEmptyListWhenNoCouponsAvailable() {\n        /*...*/\n    }\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/CouponService.java` starting at line 0:\n```java\npackage com.eventostec.api.service;\n\nimport com.eventostec.api.domain.coupon.Coupon;\nimport com.eventostec.api.domain.coupon.CouponRequestDTO;\nimport com.eventostec.api.domain.event.Event;\nimport com.eventostec.api.repositories.CouponRepository;\nimport com.eventostec.api.repositories.EventRepository;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.stereotype.Service;\n\nimport java.util.Date;\nimport java.util.List;\nimport java.util.UUID;\n\n@Service\n@RequiredArgsConstructor\npublic class CouponService {\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/CouponService.java` starting at line 14:\n```java\n/*...*/\n@Service\n@RequiredArgsConstructor\npublic class CouponService {\n\n    private final CouponRepository couponRepository;\n    private final EventRepository eventRepository;\n\n    public Coupon addCouponToEvent(UUID eventId, CouponRequestDTO couponData) {\n        Event event = eventRepository.findById(eventId)\n                .orElseThrow(() -> new IllegalArgumentException(\"Event not found\"));\n\n        Coupon coupon = new Coupon();\n        coupon.setCode(couponData.code());\n        coupon.setDiscount(couponData.discount());\n        coupon.setValid(new Date(couponData.valid()));\n        coupon.setEvent(event);\n\n        return couponRepository.save(coupon);\n    }\n\n    public List<Coupon> consultCoupons(UUID eventId, Date currentDate) {\n        return couponRepository.findByEventIdAndValidAfter(eventId, currentDate);\n    }\n}\n```\n\nHere is a potentially relevant text excerpt in `src/test/java/com/eventostec/api/service/EventServiceTest.java` starting at line 148:\n```java\n/*...*/\nclass EventServiceTest {\n    /*...*/\n    @Test\n    void test_shouldReturnUrlOnUploadImage() throws Exception {\n        MultipartFile multipartFile = mock(MultipartFile.class);\n        when(multipartFile.getBytes()).thenReturn(new byte[0]);\n        when(multipartFile.getOriginalFilename()).thenReturn(\"imagem.jpg\");\n        when(s3Utilities.getUrl(any(GetUrlRequest.class))).thenReturn(URI.create(\"https://s3.amazonaws.com/teste/imagem.jpg\").toURL());\n\n        ReflectionTestUtils.setField(eventService, \"bucketName\", bucketName);\n        String result = ReflectionTestUtils.invokeMethod(eventService, \"uploadImg\", multipartFile);\n\n        assertNotNull(result);\n        assertTrue(result.contains(\"https://s3.amazonaws.com\"));\n    }\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 0:\n```java\npackage com.eventostec.api.service;\n\nimport com.eventostec.api.domain.address.Address;\nimport com.eventostec.api.domain.coupon.Coupon;\nimport com.eventostec.api.domain.event.*;\nimport com.eventostec.api.mappers.EventMapper;\nimport com.eventostec.api.repositories.EventRepository;\nimport lombok.RequiredArgsConstructor;\nimport lombok.extern.slf4j.Slf4j;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.data.domain.Page;\nimport org.springframework.data.domain.PageRequest;\nimport org.springframework.data.domain.Pageable;\nimport org.springframework.stereotype.Service;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.web.multipart.MultipartFile;\nimport software.amazon.awssdk.core.sync.RequestBody;\nimport software.amazon.awssdk.services.s3.S3Client;\nimport software.amazon.awssdk.services.s3.model.GetUrlRequest;\nimport software.amazon.awssdk.services.s3.model.PutObjectRequest;\n\n\nimport java.nio.ByteBuffer;\nimport java.util.Date;\nimport java.util.List;\nimport java.util.Optional;\nimport java.util.UUID;\nimport java.util.stream.Collectors;\n\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n    /*...*/\n```\n\nHere is a potentially relevant text excerpt in `src/test/java/com/eventostec/api/service/EventServiceTest.java` starting at line 48:\n```java\n/*...*/\nclass EventServiceTest {\n    /*...*/\n    @BeforeEach\n    void setUp() {\n        MockitoAnnotations.openMocks(this);\n        eventService = new EventService(s3Client, addressService, couponService, repository);\n        // Configurando valores diretamente nos atributos usando ReflectionTestUtils\n        ReflectionTestUtils.setField(eventService, \"adminKey\", adminKey);\n        ReflectionTestUtils.setField(eventService, \"bucketName\", bucketName);\n        // Mockando S3Utilities\n        when(s3Client.utilities()).thenReturn(s3Utilities);\n    }\n\n    @Test\n    void test_shouldSaveEvent() {\n        EventRequestDTO requestDTO = new EventRequestDTO(\"Evento Teste\", \"Descrição do evento\", new Date().getTime(), \"Cidade Teste\", \"UF\", true, \"https://evento.com\", null);\n        Event event = new Event();\n\n        when(repository.save(any(Event.class))).thenReturn(event);\n\n        Event savedEvent = eventService.createEvent(requestDTO);\n\n        assertNotNull(savedEvent);\n        verify(repository, times(1)).save(any(Event.class));\n    }\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/config/AWSConfig.java` starting at line 11:\n```java\n/*...*/\n@Configuration\npublic class AWSConfig {\n\n    @Value(\"${aws.region}\")\n    private String awsRegion;\n    @Value(\"${aws.accessKey:}\")\n    private String accessKeyId;\n    @Value(\"${aws.secretKey:}\")\n    private String secretAccessKey;\n\n    @Bean\n    public S3Client createS3Instance() {\n        S3ClientBuilder s3ClientBuilder = S3Client.builder()\n                .region(Region.of(awsRegion));\n\n        if (accessKeyId != null && !accessKeyId.isEmpty() &&\n                secretAccessKey != null && !secretAccessKey.isEmpty()) {\n            s3ClientBuilder.credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretAccessKey)));\n        }\n\n        return s3ClientBuilder.build();\n    }\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 34:\n```java\n/*...*/\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n\n    @Value(\"${aws.bucket.name}\")\n    private String bucketName;\n\n    @Value(\"${admin.key}\")\n    private String adminKey;\n\n    private final S3Client s3Client;\n    private final AddressService addressService;\n    private final CouponService couponService;\n    private final EventRepository repository;\n\n    @Autowired\n    private EventMapper mapper;\n\n    public Event createEvent(EventRequestDTO data) {\n        /*...*/\n    }\n\n    public List<EventResponseDTO> getUpcomingEvents(int page, int size) {\n        /*...*/\n    }\n\n    public EventDetailsDTO getEventDetails(UUID eventId) {\n        /*...*/\n    }\n\n    public void deleteEvent(UUID eventId, String adminKey){\n        /*...*/\n    }\n\n    public List<EventResponseDTO> searchEvents(String title){\n        /*...*/\n    }\n\n    public List<EventResponseDTO> getFilteredEvents(int page, int size, String city, String uf, Date startDate, Date endDate){\n        /*...*/\n    }\n\n    private String uploadImg(MultipartFile multipartFile) {\n        /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/test/java/com/eventostec/api/service/EventServiceTest.java` starting at line 27:\n```java\n/*...*/\nclass EventServiceTest {\n\n    @Mock\n    private S3Client s3Client;\n\n    @Mock\n    private S3Utilities s3Utilities;\n\n    @Mock\n    private AddressService addressService;\n\n    @Mock\n    private CouponService couponService;\n\n    @Mock\n    private EventRepository repository;\n\n    @InjectMocks\n    private EventService eventService;\n\n    private final String adminKey = \"test-admin-key\";\n    private final String bucketName = \"test-bucket\";\n\n    @BeforeEach\n    void setUp() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldSaveEvent() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldReturnListOfEvents() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldReturnEventDetails() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldDeleteEvent() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldReturnMatchingEvents() {\n        /*...*/\n    }\n\n    @Test\n    void test_shouldReturnFilteredEvents() {\n        /*...*/\n    }\n\n    @Test\n    /*...*/\n}\n```\n\nHere is a potentially relevant text excerpt in `src/main/java/com/eventostec/api/service/EventService.java` starting at line 160:\n```java\n/*...*/\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n    /*...*/\n    private String uploadImg(MultipartFile multipartFile) {\n        String filename = UUID.randomUUID() + \"-\" + multipartFile.getOriginalFilename();\n\n        try {\n            PutObjectRequest putOb = PutObjectRequest.builder()\n                    .bucket(bucketName)\n                    .key(filename)\n                    .build();\n            s3Client.putObject(putOb, RequestBody.fromByteBuffer(ByteBuffer.wrap(multipartFile.getBytes())));\n            GetUrlRequest request = GetUrlRequest.builder()\n                    .bucket(bucketName)\n                    .key(filename)\n                    .build();\n            return s3Client.utilities().getUrl(request).toString();\n        } catch (Exception e) {\n            log.error(\"erro ao subir arquivo: {}\", e.getMessage());\n            return \"\";\n        }\n    }\n\n}\n```",
+      "tool_call_id": "toolu_bdrk_01CtZCNQkT3FPZE5UVGbvhXT"
+    },
+    {
+      "role": "assistant",
+      "content": "Based on my search, I found several components that need to be migrated from AWS S3 to Azure Storage:\n\n1. Configuration in `AWSConfig.java`\n2. Image upload functionality in `EventService.java`\n3. References in test files\n\nLet me help you migrate these components to Azure Storage. First, I'll update the dependencies in the pom.xml file.",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "edit_file",
+            "arguments": "{\"filePath\": \"c:\\\\projects\\\\eventostec-backend\\\\pom.xml\", \"explanation\": \"Replacing AWS S3 dependency with Azure Storage dependency\", \"code\": \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?>\\n<project xmlns=\\\"http://maven.apache.org/POM/4.0.0\\\" xmlns:xsi=\\\"http://www.w3.org/2001/XMLSchema-instance\\\"\\n\\t\\t xsi:schemaLocation=\\\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\\\">\\n    // ...existing code...\\n    <dependencies>\\n        // ...existing code...\\n        <dependency>\\n            <groupId>com.azure</groupId>\\n            <artifactId>azure-storage-blob</artifactId>\\n            <version>12.24.0</version>\\n        </dependency>\\n        // ...existing code... (remove the AWS S3 dependency)\\n    </dependencies>\\n    // ...existing code...\\n</project>\"}"
+          },
+          "id": "toolu_bdrk_01Uvp5n4t7ARfHWBT4jB2r8z",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "The file was edited successfully",
+      "tool_call_id": "toolu_bdrk_01Uvp5n4t7ARfHWBT4jB2r8z"
+    },
+    {
+      "role": "user",
+      "content": "Above is the result of calling one or more tools. The user can see the results of the edit_file tool, so you don't need to explain them. But the user can't see the results of other tools, so you should explain them to the user if referencing them in your answer. Continue from where you left off without repeating yourself."
+    }
+  ],
+  "model": "claude-3.5-sonnet",
+  "temperature": 0,
+  "top_p": 1,
+  "max_tokens": 8192,
+  "tools": [
+    {
+      "function": {
+        "name": "semantic_search",
+        "description": "Run a natural language search for relevant code or documentation comments from the user's current workspace. Returns relevant code snippets from the user's current workspace if it is large, or the full contents of the workspace if it is small.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The query to search the codebase for. Should contain all relevant context. Should ideally be text that might appear in the codebase, such as function names, variable names, or comments."
+            }
+          },
+          "required": ["query"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "search_workspace_symbols",
+        "description": "Search the user's workspace for code symbols using language services. Limited to 20 results. Use this tool when the user is looking for a specific symbol in their workspace.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "symbolName": {
+              "type": "string",
+              "description": "The symbol to search for, such as a function name, class name, or variable name."
+            }
+          },
+          "required": ["symbolName"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "file_search",
+        "description": "Search for files in the workspace by glob pattern. This only returns the paths of matching files. Limited to 20 results. Glob patterns match from the root of the workspace folder. Examples: **/*.{js,ts} to match all js/ts files in the workspace. src/** to match all files under the top-level src folder. Use this tool when you know the exact filename pattern of the files you're searching for.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search for files with names or paths matching this query. Can be a glob pattern."
+            }
+          },
+          "required": ["query"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "grep_search",
+        "description": "Do a text search in the workspace. Limited to 20 results. Use this tool when you know the exact string you're searching for.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The pattern to search for in files in the workspace. Can be a regex or plain text pattern"
+            },
+            "isRegexp": {
+              "type": "boolean",
+              "description": "Whether the pattern is a regex. False by default."
+            },
+            "includePattern": {
+              "type": "string",
+              "description": "Search files matching this glob pattern. Will be applied to the relative path of files within the workspace."
+            }
+          },
+          "required": ["query"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "read_file",
+        "description": "Read the contents of a file.\n\nYou must specify the line range you're interested in, and if the file is larger, you will be given an outline of the rest of the file. If the file contents returned are insufficient for your task, you may call this tool again to retrieve more content.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "filePath": {
+              "description": "The absolute paths of the files to read.",
+              "type": "string"
+            },
+            "startLineNumberBaseZero": {
+              "type": "number",
+              "description": "The line number to start reading from, 0-based."
+            },
+            "endLineNumberBaseZero": {
+              "type": "number",
+              "description": "The inclusive line number to end reading at, 0-based."
+            }
+          },
+          "required": [
+            "filePath",
+            "startLineNumberBaseZero",
+            "endLineNumberBaseZero"
+          ]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "list_dir",
+        "description": "List the contents of a directory. Result will have the name of the child. If the name ends in /, it's a folder, otherwise a file",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The absolute path to the directory to list."
+            }
+          },
+          "required": ["path"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "run_in_terminal",
+        "description": "Run a shell command in a terminal. State is persistent across command calls. Use this instead of printing a shell codeblock and asking the user to run it. If the command is a long-running background process, you MUST pass isBackground=true. Background terminals will return a terminal ID which you can use to check the output of a background process with get_terminal_output.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "The command to run in the terminal."
+            },
+            "explanation": {
+              "type": "string",
+              "description": "A one-sentence description of what the command does. This will be shown to the user before the command is run."
+            },
+            "isBackground": {
+              "type": "boolean",
+              "description": "Whether the command starts a background process. If true, the command will run in the background and you will not see the output. If false, the tool call will block on the command finishing, and then you will get the output. Examples of backgrond processes: building in watch mode, starting a server. You can check the output of a backgrond process later on by using get_terminal_output."
+            }
+          },
+          "required": ["command", "explanation", "isBackground"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "get_terminal_output",
+        "description": "Get the output of a terminal command previous started with run_in_terminal",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the terminal command output to check."
+            }
+          },
+          "required": ["id"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "get_errors",
+        "description": "Get any compile or lint errors in a code file. If the user mentions errors or problems in a file, they may be referring to these. Use the tool to see the same errors that the user is seeing. Also use this tool after editing a file to validate the change.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "filePaths": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["filePaths"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "get_changed_files",
+        "description": "Get git diffs of file changes in the workspace.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspacePaths": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "The absolute path(s) to workspace folder(s) to look for changes in."
+            },
+            "sourceControlState": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["staged", "unstaged", "merge-conflicts"]
+              },
+              "description": "The kinds of git state to filter by. Allowed values are: 'staged', 'unstaged', and 'merge-conflicts'. If not provided, all states will be included."
+            }
+          },
+          "required": ["workspacePaths"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "test_failure",
+        "description": "Includes test failure information in the prompt."
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "run_tests",
+        "description": "Runs tests in workspace.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "description": "Specifies which tests to run, either\n- `all` to run all tests\n- `failed` to run failed tests\n- `last` to re-run the last set of tests",
+              "enum": ["all", "failed", "last"]
+            }
+          },
+          "required": ["filter"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "get_new_workspace_guidelines",
+        "description": "Get a list of guidelines to follow to help the user get started with a new workspace in VS Code"
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "get_new_workspace_creation_command",
+        "description": "Get a command to run in the terminal to scaffold a new workspace for the given workspace type. Do not use this tool if you have not called the get_new_workspace_guidelines tool first.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Specifies the name of the workspace to create."
+            }
+          },
+          "required": ["name"]
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "migration-guideline",
+        "description": "The migration guideline tool provides step by step guideline on how to migrate from one resource type to another azure resource. When user is try to start migration, call this function first to get the guideline.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "migrateScenario": {
+              "type": "string",
+              "description": "The migration scenario, normally it like 'migration from <resource type> to <resource type>'",
+              "default": ""
+            },
+            "from": {
+              "type": "string",
+              "description": "The resource type the user is migrating from",
+              "default": ""
+            },
+            "to": {
+              "type": "string",
+              "description": "The resource type the user want to migrating to",
+              "default": ""
+            }
+          }
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "migrate-file-edit-knowledge",
+        "description": "During migration, after you get a code snippet that needs to be changed by searching or reading, call this function to gain knowledge of the migration code change according to the code snippet",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "filepath": {
+              "type": "string",
+              "description": "The file path of the code snippet that needs to be changed",
+              "default": ""
+            },
+            "migrationScenario": {
+              "type": "string",
+              "description": "The migration scenario, normally it like 'migration from <resource type> to <resource type>'",
+              "default": ""
+            },
+            "codeSummary": {
+              "type": "string",
+              "description": "The code summary of the file related with the migration scenario",
+              "default": ""
+            }
+          }
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "name": "edit_file",
+        "description": "Edit a file in the workspace. Use this tool once per file that needs to be modified, even if there are multiple changes for a file. Generate the \"explanation\" property first. \nThe user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:\n// ...existing code...\n{ changed code }\n// ...existing code...\n{ changed code }\n// ...existing code...\n\nHere is an example of how you should use format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}\n",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "explanation": {
+              "type": "string",
+              "description": "A short explanation of the edit being made. Can be the same as the explanation you showed to the user."
+            },
+            "filePath": {
+              "type": "string",
+              "description": "An absolute path to the file to edit, or the URI of a untitled, not yet named, file, such as `untitled:Untitled-1."
+            },
+            "code": {
+              "type": "string",
+              "description": "The code change to apply to the file. \nThe user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:\n// ...existing code...\n{ changed code }\n// ...existing code...\n{ changed code }\n// ...existing code...\n\nHere is an example of how you should use format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}\n"
+            }
+          },
+          "required": ["explanation", "filePath", "code"]
+        }
+      },
+      "type": "function"
+    }
+  ],
+  "n": 1,
+  "stream": true
+}

@@ -1,0 +1,170 @@
+<context>
+My current OS is: Windows
+I am working in a workspace with the following folders:
+- c:\\projects\\platform-tck
+I am working in a workspace that has the following structure:
+```
+docker-images/
+    cts-base/
+        ant-props.jar
+        Dockerfile1
+        Dockerfile2
+        Dockerfile3
+        Dockerfile4
+        README
+    cts-mailserver/
+        create_users.sh
+        Dockerfile
+        james.log
+        README
+glassfish-runner/
+    annotations-tck/
+        pom.xml
+        README
+    batch-tck/
+        apitests/
+        pom.xml
+        README.md
+        sigtests/
+    cdi-model-tck/
+        pom.xml
+        src/
+    cdi-platform-extra-tck/
+        cdi-platform-extra-tck-install/
+        cdi-platform-extra-tck-run/
+        pom.xml
+    cdi-tck/
+        cdi-tck-install/
+        cdi-tck-run/
+        pom-not-working.xml
+        pom.xml
+    concurrency-tck/
+        pom.xml
+        src/
+    connector-platform-tck/
+        admin.pass
+        connectors/
+        j2ee.pass
+        jakartaeetck/
+        javajoe.pass
+        pom.xml
+        sql/
+        src/
+        whitebox.jar
+    enterprise-beans-tck/
+        enterprise-beans-tck-install/
+        enterprise-beans-tck-run/
+        pom.xml
+    expression-language-platform-subst-tck/
+        expression-language-platform-subst-tck-install/
+        expression-language-platform-subst-tck-run/
+        pom.xml
+    expression-language-tck/
+        expression-language-tck-install/
+        expression-language-tck-run/
+        pom.xml
+    jsonb-platform-extra-tck/
+        jsonb-platform-extra-tck-install/
+        jsonb-platform-extra-tck-run/
+        pom.xml
+    jsonb-tck/
+        pom.xml
+    jsonp-platform-extra-tck/
+        jsonp-platform-extra-tck-install/
+        jsonp-platform-extra-tck-run/
+        pom.xml
+    jsonp-tck/
+    mail-platform-tck/
+    messaging-platform-tck/
+    messaging-tck/
+    pages-platform-extra-tck/
+    pages-tck/
+    persistence-platform-tck/
+    persistence-tck/
+    platform/
+    pom.xml
+    rest-platform-extra-tck/
+    rest-tck/
+    servlet-tck/
+    tags-tck/
+    transactions-tck/
+    validation-tck/
+    websocket-platform-extra-tck/
+    websocket-tck/
+internal/
+    coverage/
+    docs/
+    pom.xml
+    src/
+Jenkinsfile
+LICENSE.md
+mvnw
+mvnw.cmd
+NOTICE
+pom.xml
+README.md
+release/
+    artifact-install.pom
+    artifacts-bom.pom
+    bin/
+    pom.xml
+    README.adoc
+    src/
+    tools/
+rm-generated.sh
+sql/
+    CtsSchema.dbschema
+    db2/
+    derby/
+    mssqlserver/
+    mysql/
+    oracle/
+    pointbase/
+    postgresql/
+    sybase/
+tcks/
+    apis/
+    profiles/
+tools/
+    common/
+    pom.xml
+    signaturetest/
+    version/
+user_guides/
+    platform/
+    pom.xml
+    README.md
+```
+This view of the workspace structure may be truncated. You can use tools to collect more context if needed.
+</context>
+
+<reminder>
+When using the edit_file tool, avoid repeating existing code, instead use a line comment with `...existing code...` to represent regions of unchanged code.
+</reminder>
+<prompt>
+For each pom.xml file in the directory tcks/profiles and all of its subdirectories, if the pom.xml produces a jar file, make it so the LICENSE.md file located in the top level directory is include in the jar file in the META-INF folder.\r
+ \r
+For example, the file  tcks/profiles/platform/appclient/pom.xml would have this change:\r
+ \r
+diff --git a/tcks/profiles/platform/appclient/pom.xml b/tcks/profiles/platform/appclient/pom.xml\r
+index 9aa5705e2..812bedc29 100644\r
+--- a/tcks/profiles/platform/appclient/pom.xml\r
++++ b/tcks/profiles/platform/appclient/pom.xml\r
+@@ -172,6 +172,13 @@\r
+                    <exclude>**/build.xml</exclude>\r
+                </excludes>\r
+            </resource>\r
++            <resource>\r
++                <directory>../../../..</directory>\r
++                <includes>\r
++                    <include>LICENSE.md</include>\r
++                </includes>\r
++                <targetPath>META-INF</targetPath>\r
++            </resource>\r
+        </resources>\r
+        <plugins>\r
+            <!-- Sets minimal Maven version to 3.8.6 -->\r
+ \r
+Note that the value of the <directory> element is sensitive to the location of the pom.xml file relative to the top level license.md file.\r
+ 
+</prompt>

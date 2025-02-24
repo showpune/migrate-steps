@@ -1,0 +1,4 @@
+1) first search then make the plan
+2) plan is not corrected   
+    1) no target
+    2) steps is not right 

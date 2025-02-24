@@ -1,0 +1,2 @@
+1) start from search file
+1) code change is not right - dead loop

@@ -1,0 +1,2 @@
+1) code change is not right - dead loop
+2) embedding search return most of code, code location will be more correct

@@ -1,0 +1,114 @@
+<context>
+My current OS is: Windows
+I am working in a workspace with the following folders:
+- c:\\projects\\eventostec-backend
+I am working in a workspace that has the following structure:
+```
+docker-compose.yml
+Dockerfile
+mvnw
+mvnw.cmd
+pom.xml
+README.md
+src/
+    main/
+        java/
+            com/
+                eventostec/
+                    api/
+                        ...
+        resources/
+            application.properties
+            db/
+                migration/
+                    V1__create-event-table.sql
+                    V2__create-table-coupon.sql
+                    V3__create-table-address.sql
+                    V4__alter-table-event.sql
+                    V5__clear-prod-db.sql
+                    V6__alter-table-event.sql
+    test/
+        java/
+            com/
+                eventostec/
+                    api/
+        resources/
+            application-test.properties
+target/
+    classes/
+        application.properties
+        com/
+            eventostec/
+                api/
+                    ApiApplication.class
+                    config/
+                    controller/
+                    domain/
+                    exceptions/
+                    mappers/
+                    repositories/
+                    service/
+                    utils/
+        db/
+            migration/
+                V1__create-event-table.sql
+                V2__create-table-coupon.sql
+                V3__create-table-address.sql
+                V4__alter-table-event.sql
+                V5__clear-prod-db.sql
+                V6__alter-table-event.sql
+    generated-sources/
+        annotations/
+            com/
+                eventostec/
+                    api/
+    generated-test-sources/
+        test-annotations/
+    jacoco.exec
+    maven-status/
+        maven-compiler-plugin/
+            compile/
+                default-compile/
+                    createdFiles.lst
+                    inputFiles.lst
+            testCompile/
+                default-testCompile/
+                    createdFiles.lst
+                    inputFiles.lst
+    surefire-reports/
+        com.eventostec.api.ApiApplicationTests.txt
+        com.eventostec.api.controller.CouponControllerTest.txt
+        com.eventostec.api.controller.EventControllerTest.txt
+        com.eventostec.api.service.AddressServiceTest.txt
+        com.eventostec.api.service.CouponServiceTest.txt
+        com.eventostec.api.service.EventServiceTest.txt
+        TEST-com.eventostec.api.ApiApplicationTests.xml
+        TEST-com.eventostec.api.controller.CouponControllerTest.xml
+        TEST-com.eventostec.api.controller.EventControllerTest.xml
+        TEST-com.eventostec.api.service.AddressServiceTest.xml
+        TEST-com.eventostec.api.service.CouponServiceTest.xml
+        TEST-com.eventostec.api.service.EventServiceTest.xml
+    test-classes/
+        application-test.properties
+        com/
+            eventostec/
+                api/
+                    ApiApplicationTests.class
+                    ...
+```
+This view of the workspace structure may be truncated. You can use tools to collect more context if needed.
+</context>
+
+<reminder>
+When using the edit_file tool, avoid repeating existing code, instead use a line comment with `...existing code...` to represent regions of unchanged code.
+</reminder>
+<prompt>
+# Definition\r
+You are an Azure Java Migration AI Assistant specializing in cloud platform transition, you are responsible to change the code in the project to Azure\r
+\r
+# Steps:\r
+1) Check the dependencies in current project if any dependencies is not supported in azure, if not, replace Azure SDK equivalents. Please be awared to add the Azure SDK with the same framework. for example, if the code before change use spring, the added Azure SDK equivalents need use the spring.\r
+2) Change the Java code to used the azure SDK equivalents.\r
+3) Check the configuration to adapt the azure sdk equivalents.\r
+4) Check if any build error and fix the build errors
+</prompt>

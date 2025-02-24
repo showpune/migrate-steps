@@ -1,0 +1,124 @@
+<context>
+My current OS is: Windows
+I am working in a workspace with the following folders:
+- c:\\projects\\eventostec-backend
+I am working in a workspace that has the following structure:
+```
+docker-compose.yml
+Dockerfile
+mvnw
+mvnw.cmd
+pom.xml
+README.md
+src/
+    main/
+        java/
+            com/
+                eventostec/
+                    api/
+                        ApiApplication.java
+                        config/
+                            ...
+                        controller/
+                        domain/
+                        exceptions/
+                        mappers/
+                        repositories/
+                        service/
+                        utils/
+        resources/
+            application.properties
+            db/
+                migration/
+                    V1__create-event-table.sql
+                    V2__create-table-coupon.sql
+                    V3__create-table-address.sql
+                    V4__alter-table-event.sql
+                    V5__clear-prod-db.sql
+                    V6__alter-table-event.sql
+    test/
+        java/
+            com/
+                eventostec/
+                    api/
+                        ApiApplicationTests.java
+                        controller/
+                        service/
+        resources/
+            application-test.properties
+target/
+    classes/
+        application.properties
+        com/
+            eventostec/
+                api/
+                    ApiApplication.class
+                    config/
+                        AWSConfig.class
+                        CorsConfig.class
+                    controller/
+                        CouponController.class
+                        EventController.class
+                    domain/
+                        address/
+                        coupon/
+                        event/
+                    exceptions/
+                        config/
+                    mappers/
+                        EventMapper.class
+                        EventMapperImpl.class
+                    repositories/
+                        AddressRepository.class
+                        CouponRepository.class
+                        EventRepository.class
+                    service/
+                        AddressService.class
+                        CouponService.class
+                        EventService.class
+                    utils/
+                        ExceptionUtil.class
+        db/
+            migration/
+                V1__create-event-table.sql
+                V2__create-table-coupon.sql
+                V3__create-table-address.sql
+                V4__alter-table-event.sql
+                V5__clear-prod-db.sql
+                V6__alter-table-event.sql
+    generated-sources/
+        annotations/
+            com/
+                eventostec/
+                    api/
+                        mappers/
+    generated-test-sources/
+        test-annotations/
+    maven-status/
+        maven-compiler-plugin/
+            compile/
+                default-compile/
+                    createdFiles.lst
+                    inputFiles.lst
+    test-classes/
+        application-test.properties
+        com/
+            eventostec/
+                api/
+                    ApiApplicationTests.class
+                    controller/
+                        CouponControllerTest.class
+                        EventControllerTest.class
+                    service/
+                        AddressServiceTest.class
+                        ...
+```
+This view of the workspace structure may be truncated. You can use tools to collect more context if needed.
+</context>
+
+<reminder>
+When using the edit_file tool, avoid repeating existing code, instead use a line comment with `...existing code...` to represent regions of unchanged code.
+</reminder>
+<prompt>
+Change the code of current project to migrate to Azure
+</prompt>

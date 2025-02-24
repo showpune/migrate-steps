@@ -1,0 +1,1 @@
+Change the code of current project to migrate to Azure
