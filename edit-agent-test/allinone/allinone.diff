@@ -1,0 +1,231 @@
+diff --git a/Biblivre/pom.xml b/Biblivre/pom.xml
+index 17877aa..cf71c20 100644
+--- a/Biblivre/pom.xml
++++ b/Biblivre/pom.xml
+@@ -155,18 +155,14 @@
+             <version>1.2.1</version>
+         </dependency>
+         <dependency>
+-            <groupId>software.amazon.awssdk</groupId>
+-            <artifactId>apache-client</artifactId>
++            <groupId>com.azure</groupId>
++            <artifactId>azure-storage-blob</artifactId>
++            <version>12.29.0</version>
+         </dependency>
+         <dependency>
+-            <groupId>software.amazon.awssdk</groupId>
+-            <artifactId>s3</artifactId>
+-            <exclusions>
+-                <exclusion>
+-                    <groupId>software.amazon.awssdk</groupId>
+-                    <artifactId>netty-nio-client</artifactId>
+-                </exclusion>
+-            </exclusions>
++            <groupId>com.azure</groupId>
++            <artifactId>azure-identity</artifactId>
++            <version>1.14.2</version>
+         </dependency>
+         <dependency>
+             <groupId>org.springframework</groupId>
+diff --git a/Biblivre/src/main/java/biblivre/digitalmedia/migrator/PGToS3DigitalMediaMigrator.java b/Biblivre/src/main/java/biblivre/digitalmedia/migrator/PGToS3DigitalMediaMigrator.java
+index 00dc431..f7ac64c 100644
+--- a/Biblivre/src/main/java/biblivre/digitalmedia/migrator/PGToS3DigitalMediaMigrator.java
++++ b/Biblivre/src/main/java/biblivre/digitalmedia/migrator/PGToS3DigitalMediaMigrator.java
+@@ -7,6 +7,14 @@ import biblivre.core.schemas.SchemaDTO;
+ import biblivre.digitalmedia.DigitalMediaDTO;
+ import biblivre.digitalmedia.postgres.DatabaseFile;
+ import biblivre.digitalmedia.postgres.PostgresLargeObjectDigitalMediaDAO;
++import com.azure.identity.DefaultAzureCredentialBuilder;
++import com.azure.storage.blob.BlobClient;
++import com.azure.storage.blob.BlobServiceClient;
++import com.azure.storage.blob.BlobServiceClientBuilder;
++import com.azure.storage.blob.models.BlobBeginCopyOptions;
++import com.azure.storage.blob.models.BlobCopyInfo;
++import com.azure.storage.common.implementation.credentials.SharedKeyCredential;
++import com.azure.core.util.polling.SyncPoller;
+ import java.io.InputStream;
+ import java.sql.Connection;
+ import java.sql.SQLException;
+@@ -20,27 +28,22 @@ import org.postgresql.largeobject.LargeObjectManager;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+ import org.springframework.stereotype.Component;
+-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+-import software.amazon.awssdk.core.sync.RequestBody;
+-import software.amazon.awssdk.services.s3.S3Client;
+-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+ 
+ @Component
+ @ConditionalOnProperty(name = "DIGITAL_MEDIA_MIGRATOR")
+ @Slf4j
+ public class PGToS3DigitalMediaMigrator implements DigitalMediaStoreMigrator {
+-    private S3Client s3;
+-    private String bucketName;
++    private BlobServiceClient blobServiceClient;
++    private String containerName;
+     private SchemaBO schemaBO;
+ 
+     private PostgresLargeObjectDigitalMediaDAO digitalMediaDAO;
+ 
+     @Override
+     public void init() {
+-        this.s3 =
+-                S3Client.builder().credentialsProvider(DefaultCredentialsProvider.create()).build();
++        this.blobServiceClient = new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build()).buildClient();
+ 
+-        this.bucketName = System.getenv("S3_BUCKET_NAME");
++        this.containerName = System.getenv("AZURE_CONTAINER_NAME");
+     }
+ 
+     @Override
+@@ -50,7 +53,7 @@ public class PGToS3DigitalMediaMigrator implements DigitalMediaStoreMigrator {
+ 
+     @Override
+     public String to() {
+-        return "AWS S3";
++        return "Azure Blob Storage";
+     }
+ 
+     @Override
+@@ -91,7 +94,7 @@ public class PGToS3DigitalMediaMigrator implements DigitalMediaStoreMigrator {
+                                     media.getName(),
+                                     FileUtils.byteCountToDisplaySize(databaseFile.getSize()));
+ 
+-                            _uploadToS3(databaseFile);
++                            _uploadToAzureBlob(databaseFile);
+ 
+                             log.info("Removing {}, (id: {})", media.getName(), media.getId());
+ 
+@@ -125,22 +128,17 @@ public class PGToS3DigitalMediaMigrator implements DigitalMediaStoreMigrator {
+         largeObjectAPI.delete(oid);
+     }
+ 
+-    private void _uploadToS3(DatabaseFile databaseFile) throws SQLException {
++    private void _uploadToAzureBlob(DatabaseFile databaseFile) throws SQLException {
+         LargeObject largeObject = databaseFile.getLargeObject();
+ 
+         long oid = largeObject.getLongOID();
+ 
+-        PutObjectRequest request =
+-                PutObjectRequest.builder()
+-                        .bucket(bucketName)
+-                        .key(String.valueOf(oid))
+-                        .contentType(databaseFile.getContentType())
+-                        .contentLength(databaseFile.getSize())
+-                        .build();
++        BlobClient blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(String.valueOf(oid));
++        SyncPoller<BlobCopyInfo, Void> poller = blobClient.beginCopy(new BlobBeginCopyOptions("source-url"));
+ 
+         InputStream inputStream = largeObject.getInputStream();
+ 
+-        s3.putObject(request, RequestBody.fromInputStream(inputStream, databaseFile.getSize()));
++        blobClient.upload(inputStream, databaseFile.getSize(), true);
+     }
+ 
+     @Autowired
+diff --git a/Biblivre/src/main/java/biblivre/digitalmedia/s3/S3DigitalMediaDAO.java b/Biblivre/src/main/java/biblivre/digitalmedia/s3/S3DigitalMediaDAO.java
+index 03a3153..25d3cb6 100644
+--- a/Biblivre/src/main/java/biblivre/digitalmedia/s3/S3DigitalMediaDAO.java
++++ b/Biblivre/src/main/java/biblivre/digitalmedia/s3/S3DigitalMediaDAO.java
+@@ -2,72 +2,68 @@ package biblivre.digitalmedia.s3;
+ 
+ import biblivre.core.file.BiblivreFile;
+ import biblivre.digitalmedia.BaseDigitalMediaDAO;
++import com.azure.core.util.Context;
++import com.azure.storage.blob.BlobClient;
++import com.azure.storage.blob.BlobServiceClient;
++import com.azure.storage.blob.BlobServiceClientBuilder;
++import com.azure.storage.blob.models.BlobDownloadResponse;
++import com.azure.storage.blob.models.BlobHttpHeaders;
++import com.azure.storage.blob.models.BlobParallelUploadOptions;
++import com.azure.storage.blob.models.BlobRange;
++import com.azure.storage.blob.options.BlobDownloadOptions;
++import com.azure.storage.blob.specialized.BlobBatchClient;
++import com.azure.storage.blob.specialized.BlobBatchClientBuilder;
++import com.azure.storage.blob.specialized.BlobBatchSubResponse;
++import com.azure.storage.common.implementation.credentials.DefaultAzureCredentialBuilder;
+ import java.io.InputStream;
++import java.time.Duration;
+ import java.util.Collections;
++import java.util.List;
+ import org.apache.commons.io.FileUtils;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+ import org.springframework.stereotype.Service;
+-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+-import software.amazon.awssdk.core.ResponseInputStream;
+-import software.amazon.awssdk.core.sync.RequestBody;
+-import software.amazon.awssdk.services.s3.S3Client;
+-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+ 
+ @Service
+ @ConditionalOnProperty(
+         value = "DIGITAL_MEDIA_DAO_IMPL",
+         havingValue = "biblivre.digitalmedia.s3.S3DigitalMediaDAO")
+ public class S3DigitalMediaDAO extends BaseDigitalMediaDAO {
+-    private final S3Client s3;
+-    private final String bucketName;
++    private final BlobServiceClient blobServiceClient;
++    private final BlobBatchClient blobBatchClient;
++    private final String containerName;
+ 
+     private static final Logger logger = LoggerFactory.getLogger(S3DigitalMediaDAO.class);
+ 
+     public S3DigitalMediaDAO() {
+-        this.s3 =
+-                S3Client.builder().credentialsProvider(DefaultCredentialsProvider.create()).build();
+-
+-        this.bucketName = System.getenv("S3_BUCKET_NAME");
++        this.blobServiceClient = new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build()).buildClient();
++        this.blobBatchClient = new BlobBatchClientBuilder(blobServiceClient).buildClient();
++        this.containerName = System.getenv("AZURE_CONTAINER_NAME");
+     }
+ 
+     @Override
+     protected void persist(InputStream is, long oid, long size) {
+ 
+         logger.info(
+-                "Uploading file to S3, (oid: {}, size: {})",
++                "Uploading file to Azure Blob Storage, (oid: {}, size: {})",
+                 oid,
+                 FileUtils.byteCountToDisplaySize(size));
+ 
+-        PutObjectRequest request =
+-                PutObjectRequest.builder()
+-                        .bucket(bucketName)
+-                        .key(String.valueOf(oid))
+-                        .metadata(Collections.singletonMap("oid", String.valueOf(oid)))
+-                        .build();
+-
+-        s3.putObject(request, RequestBody.fromInputStream(is, size));
++        BlobClient blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(String.valueOf(oid));
++        blobClient.upload(new BlobParallelUploadOptions(is).setHeaders(new BlobHttpHeaders().setContentType("application/octet-stream")));
+     }
+ 
+     @Override
+     protected void deleteBlob(long oid) {
+-        DeleteObjectRequest request =
+-                DeleteObjectRequest.builder().bucket(bucketName).key(String.valueOf(oid)).build();
+-
+-        s3.deleteObject(request);
++        List<String> blobUrls = Collections.singletonList(blobServiceClient.getBlobContainerClient(containerName).getBlobClient(String.valueOf(oid)).getBlobUrl());
++        blobBatchClient.deleteBlobs(blobUrls, DeleteSnapshotsOptionType.INCLUDE);
+     }
+ 
+     @Override
+     protected BiblivreFile getFile(long oid) {
+-        GetObjectRequest request =
+-                GetObjectRequest.builder().bucket(bucketName).key(String.valueOf(oid)).build();
+-
+-        ResponseInputStream<GetObjectResponse> inputStream = s3.getObject(request);
+-
+-        return new S3File(inputStream);
++        BlobClient blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(String.valueOf(oid));
++        BlobDownloadResponse response = blobClient.downloadStreamWithResponse(new BlobDownloadOptions().setRange(new BlobRange(0)).setContext(Context.NONE), Duration.ofMinutes(1));
++        return new S3File(response.getValue());
+     }
+ }
