@@ -1,1 +1,321 @@
-{"prompt":"<SYSTEM>\nYou are an AI programming assistant that is specialized in applying code changes to an existing document.\nFollow Microsoft content policies.\nAvoid content that violates copyrights.\nIf you are asked to generate content that is harmful, hateful, racist, sexist, lewd, violent, or completely irrelevant to software engineering, only respond with \"Sorry, I can't assist with that.\"\nKeep your answers short and impersonal.\nThe user has a code block that represents a suggestion for a code change and a java file opened in a code editor.\nRewrite the existing document to fully incorporate the code changes in the provided code block.\nFor the response, always follow these instructions:\n1. Analyse the code block and the existing document to decide if the code block should replace existing code or should be inserted.\n2. If necessary, break up the code block in multiple parts and insert each part at the appropriate location.\n3. Preserve whitespace and newlines right after the parts of the file that you modify.\n4. The final result must be syntactically valid, properly formatted, and correctly indented. It should not contain any ...existing code... comments.\n5. Finally, provide the fully rewritten file. You must output the complete file.\n\nEnd your response with </copilot-edited-file>.\n</SYSTEM>\n\n\nI have the following code open in the editor, starting from line 1 to line 182.\n```java\npackage com.eventostec.api.service;\r\n\r\nimport com.eventostec.api.domain.address.Address;\r\nimport com.eventostec.api.domain.coupon.Coupon;\r\nimport com.eventostec.api.domain.event.*;\r\nimport com.eventostec.api.mappers.EventMapper;\r\nimport com.eventostec.api.repositories.EventRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.extern.slf4j.Slf4j;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.data.domain.Page;\r\nimport org.springframework.data.domain.PageRequest;\r\nimport org.springframework.data.domain.Pageable;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.web.multipart.MultipartFile;\r\nimport software.amazon.awssdk.core.sync.RequestBody;\r\nimport software.amazon.awssdk.services.s3.S3Client;\r\nimport software.amazon.awssdk.services.s3.model.GetUrlRequest;\r\nimport software.amazon.awssdk.services.s3.model.PutObjectRequest;\r\n\r\n\r\nimport java.nio.ByteBuffer;\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Optional;\r\nimport java.util.UUID;\r\nimport java.util.stream.Collectors;\r\n\r\n@Service\r\n@Slf4j\r\n@RequiredArgsConstructor\r\npublic class EventService {\r\n\r\n    @Value(\"${aws.bucket.name}\")\r\n    private String bucketName;\r\n\r\n    @Value(\"${admin.key}\")\r\n    private String adminKey;\r\n\r\n    private final S3Client s3Client;\r\n    private final AddressService addressService;\r\n    private final CouponService couponService;\r\n    private final EventRepository repository;\r\n\r\n    @Autowired\r\n    private EventMapper mapper;\r\n\r\n    public Event createEvent(EventRequestDTO data) {\r\n        String imgUrl = \"\";\r\n\r\n\r\n        if (data.image() != null) {\r\n            imgUrl = this.uploadImg(data.image());\r\n        }\r\n        Event newEvent = mapper.toEntity(data, imgUrl);\r\n        repository.save(newEvent);\r\n\r\n        if (Boolean.FALSE.equals(data.remote())) {\r\n            this.addressService.createAddress(data, newEvent);\r\n        }\r\n\r\n        return newEvent;\r\n    }\r\n\r\n    public List<EventResponseDTO> getUpcomingEvents(int page, int size) {\r\n        Pageable pageable = PageRequest.of(page, size);\r\n        Page<EventAddressProjection> eventsPage = this.repository.findUpcomingEvents(new Date(), pageable);\r\n        return eventsPage.map(event -> new EventResponseDTO(\r\n                        event.getId(),\r\n                        event.getTitle(),\r\n                        event.getDescription(),\r\n                        event.getDate(),\r\n                        event.getCity() != null ? event.getCity() : \"\",\r\n                        event.getUf() != null ? event.getUf() : \"\",\r\n                        event.getRemote(),\r\n                        event.getEventUrl(),\r\n                        event.getImgUrl())\r\n                )\r\n                .stream().toList();\r\n    }\r\n\r\n    public EventDetailsDTO getEventDetails(UUID eventId) {\r\n        Event event = repository.findById(eventId)\r\n                .orElseThrow(() -> new IllegalArgumentException(\"Event not found\"));\r\n\r\n        Optional<Address> address = addressService.findByEventId(eventId);\r\n\r\n        List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());\r\n\r\n        List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()\r\n                .map(coupon -> new EventDetailsDTO.CouponDTO(\r\n                        coupon.getCode(),\r\n                        coupon.getDiscount(),\r\n                        coupon.getValid()))\r\n                .collect(Collectors.toList());\r\n\r\n        return new EventDetailsDTO(\r\n                event.getId(),\r\n                event.getTitle(),\r\n                event.getDescription(),\r\n                event.getDate(),\r\n                address.isPresent() ? address.get().getCity() : \"\",\r\n                address.isPresent() ? address.get().getUf() : \"\",\r\n                event.getImgUrl(),\r\n                event.getEventUrl(),\r\n                couponDTOs);\r\n    }\r\n\r\n    public void deleteEvent(UUID eventId, String adminKey){\r\n        if(adminKey == null || !adminKey.equals(this.adminKey)){\r\n            throw new IllegalArgumentException(\"Invalid admin key\");\r\n        }\r\n\r\n        this.repository.delete(this.repository.findById(eventId)\r\n                .orElseThrow(() -> new IllegalArgumentException(\"Event not found\")));\r\n\r\n    }\r\n\r\n    public List<EventResponseDTO> searchEvents(String title){\r\n        title = (title != null) ? title : \"\";\r\n\r\n        List<EventAddressProjection> eventsList = this.repository.findEventsByTitle(title);\r\n        return eventsList.stream().map(event -> new EventResponseDTO(\r\n                        event.getId(),\r\n                        event.getTitle(),\r\n                        event.getDescription(),\r\n                        event.getDate(),\r\n                        event.getCity() != null ? event.getCity() : \"\",\r\n                        event.getUf() != null ? event.getUf() : \"\",\r\n                        event.getRemote(),\r\n                        event.getEventUrl(),\r\n                        event.getImgUrl())\r\n                )\r\n                .toList();\r\n    }\r\n\r\n    public List<EventResponseDTO> getFilteredEvents(int page, int size, String city, String uf, Date startDate, Date endDate){\r\n        city = (city != null) ? city : \"\";\r\n        uf = (uf != null) ? uf : \"\";\r\n        startDate = (startDate != null) ? startDate : new Date(0);\r\n        endDate = (endDate != null) ? endDate : new Date();\r\n\r\n        Pageable pageable = PageRequest.of(page, size);\r\n\r\n        Page<EventAddressProjection> eventsPage = this.repository.findFilteredEvents(city, uf, startDate, endDate, pageable);\r\n        return eventsPage.map(event -> new EventResponseDTO(\r\n                        event.getId(),\r\n                        event.getTitle(),\r\n                        event.getDescription(),\r\n                        event.getDate(),\r\n                        event.getCity() != null ? event.getCity() : \"\",\r\n                        event.getUf() != null ? event.getUf() : \"\",\r\n                        event.getRemote(),\r\n                        event.getEventUrl(),\r\n                        event.getImgUrl())\r\n                )\r\n                .stream().toList();\r\n    }\r\n\r\n    private String uploadImg(MultipartFile multipartFile) {\r\n        String filename = UUID.randomUUID() + \"-\" + multipartFile.getOriginalFilename();\r\n\r\n        try {\r\n            PutObjectRequest putOb = PutObjectRequest.builder()\r\n                    .bucket(bucketName)\r\n                    .key(filename)\r\n                    .build();\r\n            s3Client.putObject(putOb, RequestBody.fromByteBuffer(ByteBuffer.wrap(multipartFile.getBytes())));\r\n            GetUrlRequest request = GetUrlRequest.builder()\r\n                    .bucket(bucketName)\r\n                    .key(filename)\r\n                    .build();\r\n            return s3Client.utilities().getUrl(request).toString();\r\n        } catch (Exception e) {\r\n            log.error(\"erro ao subir arquivo: {}\", e.getMessage());\r\n            return \"\";\r\n        }\r\n    }\r\n\r\n}\n```\nThis is the description of what the code block changes:\n<changeDescription>\nReplace AWS S3 API usage with Azure Storage API in the EventService.java file.\n</changeDescription>\n\nThis is the code block that represents the suggested code change:\n```java\nimport com.azure.storage.blob.BlobClient;\nimport com.azure.storage.blob.BlobContainerClient;\nimport com.azure.storage.blob.BlobServiceClient;\nimport com.azure.storage.blob.models.BlobHttpHeaders;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.stereotype.Service;\n\nimport java.io.ByteArrayInputStream;\nimport java.io.InputStream;\n\n@Service\n@Slf4j\n@RequiredArgsConstructor\npublic class EventService {\n\n    @Value(\"${azure.storage.container-name}\")\n    private String containerName;\n\n    private final BlobServiceClient blobServiceClient;\n    private final AddressService addressService;\n    private final CouponService couponService;\n    private final EventRepository repository;\n\n    @Autowired\n    private EventMapper mapper;\n\n    private String uploadImg(MultipartFile multipartFile) {\n        String filename = UUID.randomUUID() + \"-\" + multipartFile.getOriginalFilename();\n        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);\n        BlobClient blobClient = containerClient.getBlobClient(filename);\n\n        try (InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes())) {\n            blobClient.upload(inputStream, multipartFile.getSize(), true);\n            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(multipartFile.getContentType());\n            blobClient.setHttpHeaders(headers);\n            return blobClient.getBlobUrl();\n        } catch (Exception e) {\n            log.error(\"Error uploading file: {}\", e.getMessage());\n            return \"\";\n        }\n    }\n\n    // ...existing code...\n}\n```\n<userPrompt>\nProvide the fully rewritten file, incorporating the suggested code change. You must produce the complete file.\n</userPrompt>\n\n\nThe resulting document:\n<copilot-edited-file>\n```java\n","speculation":"package com.eventostec.api.service;\r\n\r\nimport com.eventostec.api.domain.address.Address;\r\nimport com.eventostec.api.domain.coupon.Coupon;\r\nimport com.eventostec.api.domain.event.*;\r\nimport com.eventostec.api.mappers.EventMapper;\r\nimport com.eventostec.api.repositories.EventRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.extern.slf4j.Slf4j;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.data.domain.Page;\r\nimport org.springframework.data.domain.PageRequest;\r\nimport org.springframework.data.domain.Pageable;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.web.multipart.MultipartFile;\r\nimport software.amazon.awssdk.core.sync.RequestBody;\r\nimport software.amazon.awssdk.services.s3.S3Client;\r\nimport software.amazon.awssdk.services.s3.model.GetUrlRequest;\r\nimport software.amazon.awssdk.services.s3.model.PutObjectRequest;\r\n\r\n\r\nimport java.nio.ByteBuffer;\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Optional;\r\nimport java.util.UUID;\r\nimport java.util.stream.Collectors;\r\n\r\n@Service\r\n@Slf4j\r\n@RequiredArgsConstructor\r\npublic class EventService {\r\n\r\n    @Value(\"${aws.bucket.name}\")\r\n    private String bucketName;\r\n\r\n    @Value(\"${admin.key}\")\r\n    private String adminKey;\r\n\r\n    private final S3Client s3Client;\r\n    private final AddressService addressService;\r\n    private final CouponService couponService;\r\n    private final EventRepository repository;\r\n\r\n    @Autowired\r\n    private EventMapper mapper;\r\n\r\n    public Event createEvent(EventRequestDTO data) {\r\n        String imgUrl = \"\";\r\n\r\n\r\n        if (data.image() != null) {\r\n            imgUrl = this.uploadImg(data.image());\r\n        }\r\n        Event newEvent = mapper.toEntity(data, imgUrl);\r\n        repository.save(newEvent);\r\n\r\n        if (Boolean.FALSE.equals(data.remote())) {\r\n            this.addressService.createAddress(data, newEvent);\r\n        }\r\n\r\n        return newEvent;\r\n    }\r\n\r\n    public List<EventResponseDTO> getUpcomingEvents(int page, int size) {\r\n        Pageable pageable = PageRequest.of(page, size);\r\n        Page<EventAddressProjection> eventsPage = this.repository.findUpcomingEvents(new Date(), pageable);\r\n        return eventsPage.map(event -> new EventResponseDTO(\r\n                        event.getId(),\r\n                        event.getTitle(),\r\n                        event.getDescription(),\r\n                        event.getDate(),\r\n                        event.getCity() != null ? event.getCity() : \"\",\r\n                        event.getUf() != null ? event.getUf() : \"\",\r\n                        event.getRemote(),\r\n                        event.getEventUrl(),\r\n                        event.getImgUrl())\r\n                )\r\n                .stream().toList();\r\n    }\r\n\r\n    public EventDetailsDTO getEventDetails(UUID eventId) {\r\n        Event event = repository.findById(eventId)\r\n                .orElseThrow(() -> new IllegalArgumentException(\"Event not found\"));\r\n\r\n        Optional<Address> address = addressService.findByEventId(eventId);\r\n\r\n        List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());\r\n\r\n        List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()\r\n                .map(coupon -> new EventDetailsDTO.CouponDTO(\r\n                        coupon.getCode(),\r\n                        coupon.getDiscount(),\r\n                        coupon.getValid()))\r\n                .collect(Collectors.toList());\r\n\r\n        return new EventDetailsDTO(\r\n                event.getId(),\r\n                event.getTitle(),\r\n                event.getDescription(),\r\n                event.getDate(),\r\n                address.isPresent() ? address.get().getCity() : \"\",\r\n                address.isPresent() ? address.get().getUf() : \"\",\r\n                event.getImgUrl(),\r\n                event.getEventUrl(),\r\n                couponDTOs);\r\n    }\r\n\r\n    public void deleteEvent(UUID eventId, String adminKey){\r\n        if(adminKey == null || !adminKey.equals(this.adminKey)){\r\n            throw new IllegalArgumentException(\"Invalid admin key\");\r\n        }\r\n\r\n        this.repository.delete(this.repository.findById(eventId)\r\n                .orElseThrow(() -> new IllegalArgumentException(\"Event not found\")));\r\n\r\n    }\r\n\r\n    public List<EventResponseDTO> searchEvents(String title){\r\n        title = (title != null) ? title : \"\";\r\n\r\n        List<EventAddressProjection> eventsList = this.repository.findEventsByTitle(title);\r\n        return eventsList.stream().map(event -> new EventResponseDTO(\r\n                        event.getId(),\r\n                        event.getTitle(),\r\n                        event.getDescription(),\r\n                        event.getDate(),\r\n                        event.getCity() != null ? event.getCity() : \"\",\r\n                        event.getUf() != null ? event.getUf() : \"\",\r\n                        event.getRemote(),\r\n                        event.getEventUrl(),\r\n                        event.getImgUrl())\r\n                )\r\n                .toList();\r\n    }\r\n\r\n    public List<EventResponseDTO> getFilteredEvents(int page, int size, String city, String uf, Date startDate, Date endDate){\r\n        city = (city != null) ? city : \"\";\r\n        uf = (uf != null) ? uf : \"\";\r\n        startDate = (startDate != null) ? startDate : new Date(0);\r\n        endDate = (endDate != null) ? endDate : new Date();\r\n\r\n        Pageable pageable = PageRequest.of(page, size);\r\n\r\n        Page<EventAddressProjection> eventsPage = this.repository.findFilteredEvents(city, uf, startDate, endDate, pageable);\r\n        return eventsPage.map(event -> new EventResponseDTO(\r\n                        event.getId(),\r\n                        event.getTitle(),\r\n                        event.getDescription(),\r\n                        event.getDate(),\r\n                        event.getCity() != null ? event.getCity() : \"\",\r\n                        event.getUf() != null ? event.getUf() : \"\",\r\n                        event.getRemote(),\r\n                        event.getEventUrl(),\r\n                        event.getImgUrl())\r\n                )\r\n                .stream().toList();\r\n    }\r\n\r\n    private String uploadImg(MultipartFile multipartFile) {\r\n        String filename = UUID.randomUUID() + \"-\" + multipartFile.getOriginalFilename();\r\n\r\n        try {\r\n            PutObjectRequest putOb = PutObjectRequest.builder()\r\n                    .bucket(bucketName)\r\n                    .key(filename)\r\n                    .build();\r\n            s3Client.putObject(putOb, RequestBody.fromByteBuffer(ByteBuffer.wrap(multipartFile.getBytes())));\r\n            GetUrlRequest request = GetUrlRequest.builder()\r\n                    .bucket(bucketName)\r\n                    .key(filename)\r\n                    .build();\r\n            return s3Client.utilities().getUrl(request).toString();\r\n        } catch (Exception e) {\r\n            log.error(\"erro ao subir arquivo: {}\", e.getMessage());\r\n            return \"\";\r\n        }\r\n    }\r\n\r\n}\r\n","temperature":0,"stream":true,"stop":["```\n</copilot-edited-file>","```\r\n</copilot-edited-file>","</copilot-edited-file>"]}
+{"prompt":"<SYSTEM>
+You are an AI programming assistant that is specialized in applying code changes to an existing document.
+Follow Microsoft content policies.
+Avoid content that violates copyrights.
+If you are asked to generate content that is harmful, hateful, racist, sexist, lewd, violent, or completely irrelevant to software engineering, only respond with \"Sorry, I can't assist with that.\"
+Keep your answers short and impersonal.
+The user has a code block that represents a suggestion for a code change and a xml file opened in a code editor.
+Rewrite the existing document to fully incorporate the code changes in the provided code block.
+For the response, always follow these instructions:
+1. Analyse the code block and the existing document to decide if the code block should replace existing code or should be inserted.
+2. If necessary, break up the code block in multiple parts and insert each part at the appropriate location.
+3. Preserve whitespace and newlines right after the parts of the file that you modify.
+4. The final result must be syntactically valid, properly formatted, and correctly indented. It should not contain any ...existing code... comments.
+5. Finally, provide the fully rewritten file. You must output the complete file.
+
+End your response with </copilot-edited-file>.
+</SYSTEM>
+
+
+I have the following code open in the editor, starting from line 1 to line 134.
+```xml
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r
+<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r
+\t\t xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r
+\t<modelVersion>4.0.0</modelVersion>\r
+\t<parent>\r
+\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t<artifactId>spring-boot-starter-parent</artifactId>\r
+\t\t<version>3.3.4</version>\r
+\t\t<relativePath/>\r
+\t</parent>\r
+\t<groupId>com.eventostec</groupId>\r
+\t<artifactId>api</artifactId>\r
+\t<version>0.0.1-SNAPSHOT</version>\r
+\t<name>api</name>\r
+\t<description>Backend for eventos tec</description>\r
+\t<properties>\r
+\t\t<java.version>21</java.version>\r
+\t\t<mapstruct.version>1.4.2.Final</mapstruct.version>\r
+\t\t<mapstruct-lombok.version>0.2.0</mapstruct-lombok.version>\r
+\t</properties>\r
+\t<dependencies>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-data-jpa</artifactId>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-web</artifactId>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-validation</artifactId>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-devtools</artifactId>\r
+\t\t\t<scope>runtime</scope>\r
+\t\t\t<optional>true</optional>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.postgresql</groupId>\r
+\t\t\t<artifactId>postgresql</artifactId>\r
+\t\t\t<scope>runtime</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.projectlombok</groupId>\r
+\t\t\t<artifactId>lombok</artifactId>\r
+\t\t\t<optional>true</optional>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-test</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.flywaydb</groupId>\r
+\t\t\t<artifactId>flyway-core</artifactId>\r
+\t\t\t<version>9.8.1</version>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>com.h2database</groupId>\r
+\t\t\t<artifactId>h2</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.mockito</groupId>\r
+\t\t\t<artifactId>mockito-core</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.mockito</groupId>\r
+\t\t\t<artifactId>mockito-junit-jupiter</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>software.amazon.awssdk</groupId>\r
+\t\t\t<artifactId>s3</artifactId>\r
+\t\t\t<version>2.26.7</version>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.mapstruct</groupId>\r
+\t\t\t<artifactId>mapstruct</artifactId>\r
+\t\t\t<version>${mapstruct.version}</version>\r
+\t\t</dependency>\r
+\t</dependencies>\r
+\r
+\t<build>\r
+\t\t<plugins>\r
+\t\t\t<plugin>\r
+\t\t\t\t<groupId>org.apache.maven.plugins</groupId>\r
+\t\t\t\t<artifactId>maven-compiler-plugin</artifactId>\r
+\t\t\t\t<version>3.13.0</version>\r
+\t\t\t\t<configuration>\r
+\t\t\t\t\t<source>21</source>\r
+\t\t\t\t\t<target>21</target>\r
+\t\t\t\t</configuration>\r
+\t\t\t</plugin>\r
+\t\t\t<plugin>\r
+\t\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t\t<artifactId>spring-boot-maven-plugin</artifactId>\r
+\t\t\t\t<configuration>\r
+\t\t\t\t\t<excludes>\r
+\t\t\t\t\t\t<exclude>\r
+\t\t\t\t\t\t\t<groupId>org.projectlombok</groupId>\r
+\t\t\t\t\t\t\t<artifactId>lombok</artifactId>\r
+\t\t\t\t\t\t</exclude>\r
+\t\t\t\t\t</excludes>\r
+\t\t\t\t</configuration>\r
+\t\t\t</plugin>\r
+\t\t\t<plugin>\r
+\t\t\t\t<groupId>org.jacoco</groupId>\r
+\t\t\t\t<artifactId>jacoco-maven-plugin</artifactId>\r
+\t\t\t\t<version>0.8.11</version>\r
+\t\t\t\t<executions>\r
+\t\t\t\t\t<execution>\r
+\t\t\t\t\t\t<goals>\r
+\t\t\t\t\t\t\t<goal>prepare-agent</goal>\r
+\t\t\t\t\t\t</goals>\r
+\t\t\t\t\t</execution>\r
+\t\t\t\t\t<execution>\r
+\t\t\t\t\t\t<id>report</id>\r
+\t\t\t\t\t\t<phase>verify</phase>\r
+\t\t\t\t\t\t<goals>\r
+\t\t\t\t\t\t\t<goal>report</goal>\r
+\t\t\t\t\t\t</goals>\r
+\t\t\t\t\t</execution>\r
+\t\t\t\t</executions>\r
+\t\t\t\t<configuration>\r
+\t\t\t\t\t<outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>\r
+\t\t\t\t</configuration>\r
+\t\t\t</plugin>\r
+\t\t</plugins>\r
+\t</build>\r
+</project>
+```
+This is the description of what the code block changes:
+<changeDescription>
+Replacing AWS S3 dependency with Azure Storage dependency
+</changeDescription>
+
+This is the code block that represents the suggested code change:
+```xml
+// ...existing code...
+\t\t<dependency>
+\t\t\t<groupId>com.azure</groupId>
+\t\t\t<artifactId>azure-storage-blob</artifactId>
+\t\t\t<version>12.24.1</version>
+\t\t</dependency>
+\t\t<dependency>
+\t\t\t<groupId>org.mapstruct</groupId>
+\t\t\t<artifactId>mapstruct</artifactId>
+\t\t\t<version>${mapstruct.version}</version>
+\t\t</dependency>
+\t</dependencies>
+// ...existing code...
+```
+<userPrompt>
+Provide the fully rewritten file, incorporating the suggested code change. You must produce the complete file.
+</userPrompt>
+
+
+The resulting document:
+<copilot-edited-file>
+```xml
+","speculation":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r
+<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r
+\t\t xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r
+\t<modelVersion>4.0.0</modelVersion>\r
+\t<parent>\r
+\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t<artifactId>spring-boot-starter-parent</artifactId>\r
+\t\t<version>3.3.4</version>\r
+\t\t<relativePath/>\r
+\t</parent>\r
+\t<groupId>com.eventostec</groupId>\r
+\t<artifactId>api</artifactId>\r
+\t<version>0.0.1-SNAPSHOT</version>\r
+\t<name>api</name>\r
+\t<description>Backend for eventos tec</description>\r
+\t<properties>\r
+\t\t<java.version>21</java.version>\r
+\t\t<mapstruct.version>1.4.2.Final</mapstruct.version>\r
+\t\t<mapstruct-lombok.version>0.2.0</mapstruct-lombok.version>\r
+\t</properties>\r
+\t<dependencies>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-data-jpa</artifactId>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-web</artifactId>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-validation</artifactId>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-devtools</artifactId>\r
+\t\t\t<scope>runtime</scope>\r
+\t\t\t<optional>true</optional>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.postgresql</groupId>\r
+\t\t\t<artifactId>postgresql</artifactId>\r
+\t\t\t<scope>runtime</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.projectlombok</groupId>\r
+\t\t\t<artifactId>lombok</artifactId>\r
+\t\t\t<optional>true</optional>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t<artifactId>spring-boot-starter-test</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.flywaydb</groupId>\r
+\t\t\t<artifactId>flyway-core</artifactId>\r
+\t\t\t<version>9.8.1</version>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>com.h2database</groupId>\r
+\t\t\t<artifactId>h2</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.mockito</groupId>\r
+\t\t\t<artifactId>mockito-core</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.mockito</groupId>\r
+\t\t\t<artifactId>mockito-junit-jupiter</artifactId>\r
+\t\t\t<scope>test</scope>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>software.amazon.awssdk</groupId>\r
+\t\t\t<artifactId>s3</artifactId>\r
+\t\t\t<version>2.26.7</version>\r
+\t\t</dependency>\r
+\t\t<dependency>\r
+\t\t\t<groupId>org.mapstruct</groupId>\r
+\t\t\t<artifactId>mapstruct</artifactId>\r
+\t\t\t<version>${mapstruct.version}</version>\r
+\t\t</dependency>\r
+\t</dependencies>\r
+\r
+\t<build>\r
+\t\t<plugins>\r
+\t\t\t<plugin>\r
+\t\t\t\t<groupId>org.apache.maven.plugins</groupId>\r
+\t\t\t\t<artifactId>maven-compiler-plugin</artifactId>\r
+\t\t\t\t<version>3.13.0</version>\r
+\t\t\t\t<configuration>\r
+\t\t\t\t\t<source>21</source>\r
+\t\t\t\t\t<target>21</target>\r
+\t\t\t\t</configuration>\r
+\t\t\t</plugin>\r
+\t\t\t<plugin>\r
+\t\t\t\t<groupId>org.springframework.boot</groupId>\r
+\t\t\t\t<artifactId>spring-boot-maven-plugin</artifactId>\r
+\t\t\t\t<configuration>\r
+\t\t\t\t\t<excludes>\r
+\t\t\t\t\t\t<exclude>\r
+\t\t\t\t\t\t\t<groupId>org.projectlombok</groupId>\r
+\t\t\t\t\t\t\t<artifactId>lombok</artifactId>\r
+\t\t\t\t\t\t</exclude>\r
+\t\t\t\t\t</excludes>\r
+\t\t\t\t</configuration>\r
+\t\t\t</plugin>\r
+\t\t\t<plugin>\r
+\t\t\t\t<groupId>org.jacoco</groupId>\r
+\t\t\t\t<artifactId>jacoco-maven-plugin</artifactId>\r
+\t\t\t\t<version>0.8.11</version>\r
+\t\t\t\t<executions>\r
+\t\t\t\t\t<execution>\r
+\t\t\t\t\t\t<goals>\r
+\t\t\t\t\t\t\t<goal>prepare-agent</goal>\r
+\t\t\t\t\t\t</goals>\r
+\t\t\t\t\t</execution>\r
+\t\t\t\t\t<execution>\r
+\t\t\t\t\t\t<id>report</id>\r
+\t\t\t\t\t\t<phase>verify</phase>\r
+\t\t\t\t\t\t<goals>\r
+\t\t\t\t\t\t\t<goal>report</goal>\r
+\t\t\t\t\t\t</goals>\r
+\t\t\t\t\t</execution>\r
+\t\t\t\t</executions>\r
+\t\t\t\t<configuration>\r
+\t\t\t\t\t<outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>\r
+\t\t\t\t</configuration>\r
+\t\t\t</plugin>\r
+\t\t</plugins>\r
+\t</build>\r
+</project>","temperature":0,"stream":true,"stop":["```
+</copilot-edited-file>","```\r
+</copilot-edited-file>","</copilot-edited-file>"]}

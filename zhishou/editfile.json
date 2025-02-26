@@ -1,0 +1,22 @@
+\"explanation\": \"Replacing AWS S3 dependency with Azure Storage dependencies\", \"filePath\": \"c:\\\\projects\\\\eventostec-backend\\\\pom.xml\", \"code\": \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?>\
+<project xmlns=\\\"http://maven.apache.org/POM/4.0.0\\\" xmlns:xsi=\\\"http://www.w3.org/2001/XMLSchema-instance\\\"\
+\\t\\t xsi:schemaLocation=\\\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\\\">\
+    // ...existing code...\
+    <dependencies>\
+        // ...existing code...\
+        <!-- Remove AWS S3 dependency -->\
+        <!-- Add Azure Storage dependencies -->\
+        <dependency>\
+            <groupId>com.azure</groupId>\
+            <artifactId>azure-storage-blob</artifactId>\
+            <version>12.29.0</version>\
+        </dependency>\
+        <dependency>\
+            <groupId>com.azure</groupId>\
+            <artifactId>azure-identity</artifactId>\
+            <version>1.14.2</version>\
+        </dependency>\
+        // ...existing code...\
+    </dependencies>\
+    // ...existing code...\
+</project>\"
