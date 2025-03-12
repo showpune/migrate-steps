@@ -1,22 +1,407 @@
-copilot_semanticSearch
- copilot_searchWorkspaceSymbols
- copilot_vscodeAPI
- copilot_findFiles
- copilot_findTextInFiles
- copilot_readFile
- copilot_listDirectory
- copilot_runInTerminal
- copilot_getTerminalOutput
- copilot_getErrors
- copilot_readProjectStructure
- copilot_getChangedFiles
- copilot_testFailure
- copilot_runTests
- copilot_getTerminalSelection
- copilot_getTerminalLastCommand
- copilot_getWorkspaceCreationGuidelines
- copilot_getWorkspaceCreationCommand
- chat-tools-sample_tabCount
- chat-tools-sample_findFiles
- chat-tools-sample_runInTerminal
- vscode_editFile
+{
+    "messages": [
+        {
+            "role": "system",
+            "content": "You are an AI programming assistant.\nWhen asked for your name, you must respond with \"GitHub Copilot\".\nFollow the user's requirements carefully & to the letter.\nFollow Microsoft content policies.\nAvoid content that violates copyrights.\nIf you are asked to generate content that is harmful, hateful, racist, sexist, lewd, violent, or completely irrelevant to software engineering, only respond with \"Sorry, I can't assist with that.\"\nKeep your answers short and impersonal.\n<instructions>\nYou are a highly sophisticated automated coding agent with expert-level knowledge across many different programming languages and frameworks.\nThe user will ask a question, or ask you to perform a task, and it may require lots of research to answer correctly. There is a selection of tools that let you perform actions or retrieve helpful context to answer the user's question.\nIf you can infer the project type (languages, frameworks, and libraries) from the user's query or the context that you have, make sure to keep them in mind when making changes.\nIf the user wants you to implement a feature and they have not specified the files to edit, first break down the user's request into smaller concepts and think about the kinds of files you need to grasp each concept.\nIf you aren't sure which tool is relevant, you can call multiple tools. You can call tools repeatedly to take actions or gather as much context as needed until you have completed the task fully. Don't give up unless you are sure the request cannot be fulfilled with the tools you have. It's YOUR RESPONSIBILITY to make sure that you have done all you can to collect necessary context.\nPrefer using the semantic_search tool to search for context unless you know the exact string or filename pattern you're searching for.\nDon't make assumptions about the situation- gather context first, then perform the task or answer the question.\nThink creatively and explore the workspace in order to make a complete fix.\nDon't repeat yourself after a tool call, pick up where you left off.\nNEVER print out a codeblock with file changes unless the user asked for it. Use the edit_file tool instead.\nNEVER print out a codeblock with a terminal command to run unless the user asked for it. Use the run_in_terminal tool instead.\nYou don't need to read a file if it's already provided in context.\n</instructions>\n<toolUseInstructions>\nWhen using a tool, follow the json schema very carefully and make sure to include ALL required properties.\nAlways output valid JSON when using a tool.\nIf a tool exists to do a task, use the tool instead of asking the user to manually take an action.\nIf you say that you will take an action, then go ahead and use the tool to do it. No need to ask permission.\nNever use multi_tool_use.parallel or any tool that does not exist. Use tools using the proper procedure, DO NOT write out a json codeblock with the tool inputs.\nNever say the name of a tool to a user.\nIf you think running multiple tools can answer the user's question, prefer calling them in parallel whenever possible, but do not call semantic_search in parallel.\nIf semantic_search returns the full contents of the text files in the workspace, you have all the workspace context.\nDon't call the run_in_terminal tool multiple times in parallel. Instead, run one command and wait for the output before running the next command.\nAfter you have performed the user's task, if the user corrected something you did, expressed a coding preference, or communicated a fact that you need to remember, use the update_user_preferences tool to save their preferences.\n\n</toolUseInstructions>\n<editFileInstructions>\nDon't try to edit an existing file without reading it first, so you can make changes properly.\nUse the edit_file tool to edit files. When editing files, group your changes by file.\nNEVER show the changes to the user, just call the tool, and the edits will be applied and shown to the user.\nNEVER print a codeblock that represents a change to a file, use edit_file instead.\nFor each file, give a short description of what needs to be changed, then use the edit_file tool. You can use any tool multiple times in a response, and you can keep writing text after using a tool.\nFollow best practices when editing files. If a popular external library exists to solve a problem, use it and properly install the package e.g. with \"npm install\" or creating a \"requirements.txt\".\nAfter editing a file, you MUST call get_errors to validate the change. Fix the errors if they are relevant to your change or the prompt, and remember to validate that they were actually fixed.\nThe edit_file tool is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The tool prefers that you are as concise as possible. For example:\n// ...existing code...\nchanged code\n// ...existing code...\nchanged code\n// ...existing code...\n\nHere is an example of how you should format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}\n</editFileInstructions>"
+        },
+        {
+            "role": "user",
+            "content": "migrate the project from AWS s3 to azure storage account using formula s3-to-azure-blob-storage"
+        },
+        {
+            "role": "assistant",
+            "content": "I'll help you migrate your project from AWS S3 to Azure Storage Account using the s3-to-azure-blob-storage formula. Let me get a migration guideline first to understand what changes we need to make.Based on the migration guideline, I'll help you migrate your project from AWS S3 to Azure Storage Account. The guideline has identified several files that need changes to convert AWS S3 functionality to Azure Blob Storage.\n\nLet's start with updating the dependencies in your [`pom.xml`](pom.xml ) file:"
+        },
+        {
+            "role": "user",
+            "content": "When generating code, please follow these user provided coding instructions. You can ignore an instruction if it contradicts a system message.\n<instructions>\nWe use Bazel for managing our Java dependencies, not Maven, so when talking about Java packages, always give me instructions and code samples that use Bazel.\r\n\r\nWe always write JavaScript with double quotes and tabs for indentation, so when your responses include JavaScript code, please follow those conventions.\r\n\r\nOur team uses Jira for tracking items of work.\n</instructions>\n<context>\nMy current OS is: Windows\nI am working in a workspace with the following folders:\n- c:\\projects\\java-migration-examples\\cloudSec\nI am working in a workspace that has the following structure:\n```\ndocker-compose-dev.yaml\ndocker-compose.yaml\nLICENSE\nmvnw\npom.xml\nREADME.md\n更新日志.md\njava-app/\n\tDockerfile\n\treadme.md\nmysql/\n\tDockerfile\n\tkey.sql\nsrc/\n\tmain/\n\t\tjava/\n\t\t\tcom/\n\t\t\t\tApplicationStart.java\n\t\t\t\tcommon/\n\t\t\t\tconfig/\n\t\t\t\tcontroller/\n\t\t\t\tdomain/\n\t\t\t\texception/\n\t\t\t\tmapper/\n\t\t\t\tservice/\n\t\tresources/\n\t\t\tapplication-dev.yaml\n\t\t\tapplication.yaml\n\t\t\tcosRegion.txt\n\t\t\tDB/\n\t\t\t\tDB.db\n\t\t\tmapper/\n\t\t\t\tBucketMapper.xml\n\t\t\t\tClusterMapper.xml\n\t\t\t\tConsoleUserMapper.xml\n\t\t\t\tDatabasesInstanceMapper.xml\n\t\t\t\tFilesMapper.xml\n\t\t\t\tHuaweiEcsRegionMapper.xml\n\t\t\t\tHuaweiObsRegionMapper.xml\n\t\t\t\tInstanceMapper.xml\n\t\t\t\tKeyMapper.xml\n\t\t\t\tMenu2Mapper.xml\n\t\t\t\tMenuMapper.xml\n\t\t\t\tTaskMapper.xml\n\t\t\t\tUserMapper.xml\n\ttest/\n\t\tjava/\n\t\t\tcom/\n\t\t\t\tDemo.java\ntarget/\n\tcloudSec-0.0.1-SNAPSHOT.jar\n\tcloudSec-0.0.1-SNAPSHOT.jar.original\n\tclasses/\n\t\tapplication-dev.yaml\n\t\tapplication.yaml\n\t\tcosRegion.txt\n\t\tcom/\n\t\t\tApplicationStart.class\n\t\t\tcommon/\n\t\t\t\tBucket.class\n\t\t\t\tLogAnnotation.class\n\t\t\t\tLogAspect.class\n\t\t\t\tNode.class\n\t\t\t\tPasswordGenerator.class\n\t\t\t\tRandomPwd.class\n\t\t\t\tTools.class\n\t\t\t\tType.class\n\t\t\t\taliyun/\n\t\t\t\taws/\n\t\t\t\tdata/\n\t\t\t\thuawei/\n\t\t\t\tmodle/\n\t\t\t\tqiniu/\n\t\t\t\ttencent/\n\t\t\tconfig/\n\t\t\t\tCorsConfig.class\n\t\t\t\tExecutorServiceConfiguration.class\n\t\t\t\tMpConfig.class\n\t\t\t\tSaTokenConfigure.class\n\t\t\tcontroller/\n\t\t\t\tBucketController.class\n\t\t\t\tClusterController.class\n\t\t\t\tConsoleUserController.class\n\t\t\t\t...\n\t\t\tdomain/\n\t\t\texception/\n\t\t\tmapper/\n\t\t\tservice/\n\t\tDB/\n\t\t\tDB.db\n\t\tmapper/\n\t\t\tBucketMapper.xml\n\t\t\tClusterMapper.xml\n\t\t\tConsoleUserMapper.xml\n\t\t\tDatabasesInstanceMapper.xml\n\t\t\tFilesMapper.xml\n\t\t\tHuaweiEcsRegionMapper.xml\n\t\t\tHuaweiObsRegionMapper.xml\n\t\t\tInstanceMapper.xml\n\t\t\tKeyMapper.xml\n\t\t\tMenu2Mapper.xml\n\t\t\tMenuMapper.xml\n\t\t\tTaskMapper.xml\n\t\t\tUserMapper.xml\n\tgenerated-sources/\n\t\tannotations/\n\tgenerated-test-sources/\n\t\ttest-annotations/\n\tmaven-archiver/\n\t\tpom.properties\n\tmaven-status/\n\t\tmaven-compiler-plugin/\n\t\t\tcompile/\n\t\t\ttestCompile/\n\ttest-classes/\n\t\tcom/\n\t\t\tDemo.class\nvue-app/\n\tDockerfile\n\tnginx.conf\n\tweb.zip\n```\nThis view of the workspace structure may be truncated. You can use tools to collect more context if needed.\n</context>\n\n<reminder>\nWhen using the edit_file tool, avoid repeating existing code, instead use a line comment with `...existing code...` to represent regions of unchanged code.\n</reminder>\n<prompt>\nmigrate the project from AWS s3 to azure storage account using formula s3-to-azure-blob-storage\n</prompt>"
+        },
+        {
+            "role": "assistant",
+            "content": "I'll help you migrate your project from AWS S3 to Azure Storage Account using the s3-to-azure-blob-storage formula. Let me first get the migration guideline to understand what needs to be changed.",
+            "tool_calls": [
+                {
+                    "function": {
+                        "name": "migration_guideline",
+                        "arguments": "{\"migrationScenario\": \"AWS s3 to Azure Blob Storage\", \"formulaName\": \"s3-to-azure-blob-storage\"}"
+                    },
+                    "id": "tooluse_0xt5nW79SK2-65AQH3RneQ",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "role": "tool",
+            "content": "# Please follow the below guideline to migrate the project for scenario AWS s3 to Azure Blob Storage\n\n## First Step \nBelow is the files need be changed and related rules can be applied to the file, you can apply the related rules of one file into the file in batch, you can call migration_change_code tools to get code change by file and rules\n<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<fileChanges>\n  <fileRuleMap>\n    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\aws\\S3.java</file>\n    <rule>Migrate S3clientBuilder to BlobServiceClientBuilder</rule>\n    <rule>Migrate S3client getObject to azure blob storage download</rule>\n    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>\n    <rule>Migrate S3client listObject to azure blob storage listBlobs</rule>\n    <rule>Migrate S3client putObject to azure blob storage upload</rule>\n    <rule>Migrate S3Object to azure blob storage BlobItem</rule>\n  </fileRuleMap>\n  <fileRuleMap>\n    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\huawei\\OBS.java</file>\n    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>\n  </fileRuleMap>\n  <fileRuleMap>\n    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\aliyun\\product\\OSS.java</file>\n    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>\n    <rule>Migrate S3client putObject to azure blob storage upload</rule>\n  </fileRuleMap>\n  <fileRuleMap>\n    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\tencent\\product\\COS.java</file>\n    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>\n    <rule>Migrate S3client putObject to azure blob storage upload</rule>\n  </fileRuleMap>\n  <fileRuleMap>\n    <file>c:\\projects\\java-migration-examples\\cloudSec\\pom.xml</file>\n    <rule>Migrate S3 pom dependency to azure blob storage pom dependency</rule>\n  </fileRuleMap>\n  <fileRuleMap>\n    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\Bucket.java</file>\n    <rule>Migrate S3Object to azure blob storage BlobItem</rule>\n  </fileRuleMap>\n</fileChanges>\n\n## Last Step \nCheck the build error, if there is any build eror, fix it\n\nExplain the above to customer",
+            "tool_call_id": "tooluse_0xt5nW79SK2-65AQH3RneQ"
+        },
+        {
+            "role": "assistant",
+            "content": "Based on the migration guideline, I need to migrate your project from AWS S3 to Azure Blob Storage. The tool has identified several files that need to be modified to replace AWS S3 functionality with Azure Blob Storage equivalents.\n\nLet me break down what needs to be changed:\n\n1. First, we need to update the dependencies in your build system\n2. Then modify several Java files that use AWS S3 APIs to use Azure Blob Storage APIs instead\n\nSince you mentioned you use Bazel for managing Java dependencies (not Maven), I'll adapt my approach accordingly.\n\nLet's start by examining these files more closely to understand their current implementation before making changes:",
+            "tool_calls": [
+                {
+                    "function": {
+                        "name": "read_file",
+                        "arguments": "{\"filePath\": \"c:\\\\projects\\\\java-migration-examples\\\\cloudSec\\\\src\\\\main\\\\java\\\\com\\\\common\\\\aws\\\\S3.java\", \"startLineNumberBaseZero\": 0, \"endLineNumberBaseZero\": 100}"
+                    },
+                    "id": "tooluse_uJ4hZFvCSFC1GdCN649lSg",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "role": "tool",
+            "content": "```\n// filepath: c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\aws\\S3.java\npackage com.common.aws;\nimport cn.hutool.core.io.FileUtil;\nimport cn.hutool.core.util.StrUtil;\nimport com.common.modle.OssFileLists;\nimport com.domain.Bucket;\nimport com.domain.Key;\nimport com.domain.Task;\nimport software.amazon.awssdk.auth.credentials.*;\nimport software.amazon.awssdk.core.sync.RequestBody;\nimport software.amazon.awssdk.regions.Region;\nimport software.amazon.awssdk.services.s3.S3Client;\nimport software.amazon.awssdk.services.s3.model.*;\nimport software.amazon.awssdk.services.s3.presigner.S3Presigner;\nimport software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;\nimport software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;\nimport java.io.File;\nimport java.net.URL;\nimport java.time.Duration;\nimport java.util.*;\nimport java.util.stream.Collectors;\npublic class S3 {\n    /*\n    初始化存储桶所有区域\n     */\n    private static final List<Region> regions = Region.regions();\n    public static AwsCredentialsProvider getBaseAuth(Key key){\n        AwsCredentialsProvider credentialsProvider;\n        if (StrUtil.isBlank(key.getToken())){\n            credentialsProvider = StaticCredentialsProvider\n                    .create(AwsBasicCredentials.create(key.getSecretId(), key.getSecretKey()));\n        }else {\n            credentialsProvider = StaticCredentialsProvider.create(\n                            AwsSessionCredentials.create(\n                                    key.getSecretId(),\n                                    key.getSecretKey(),\n                                    key.getToken()));\n        }\n        return credentialsProvider;\n    }\n    public static List<Bucket> getBucketList(Key key){\n        List<Region> all_regions = Region.regions();\n        List<Bucket> list = new ArrayList<>();\n        for (Region region : all_regions) {\n            S3Client s3Client = S3Client.builder()\n                    .credentialsProvider(getBaseAuth(key))\n                    .region(region)\n                    .build();\n            try {\n                ListBucketsResponse listBucketsResponse = s3Client.listBuckets();\n                if (!listBucketsResponse.buckets().isEmpty()) {\n                    for (software.amazon.awssdk.services.s3.model.Bucket bucket : listBucketsResponse.buckets()) {\n                        Bucket b = new Bucket();\n                        b.setName(bucket.name());\n                        //获取存储桶区域\n                        GetBucketLocationRequest request = GetBucketLocationRequest\n                                .builder()\n                                .bucket(bucket.name())\n                                .build();\n                        String regionStr = s3Client.getBucketLocation(request).locationConstraintAsString();\n                        String s = StrUtil.isBlank(regionStr) ? Region.US_EAST_1.id() : regionStr;\n                        b.setKeyId(key.getId());\n                        b.setCreateById(key.getCreateById());\n                        b.setRegion(s);\n                        b.setKeyName(key.getName());\n                        b.setEndPoint(String.format(\"%s.s3-%s.amazonaws.com\", bucket.name(),s));\n                        list.add(b);\n                    }\n                }\n            } catch (Exception e) {\n                System.out.println(e.getMessage());\n            }\n        }\n        //去重\n        return list.stream()\n                .map(Bucket::getName)\n                .distinct()\n                .map(\n                        name -> list.stream()\n                        .filter(item -> item.getName().equals(name))\n                        .findFirst()\n                        .orElse(null)\n                )\n                .filter(Objects::nonNull)\n                .collect(Collectors.toList());\n    }\n    /*\n    获取文件列表\n     */\n    public static List<S3Object> getFileLists(Key key, Bucket bucket,String keyWord){\n        try {\n            S3Client s3Client = S3Client.builder()\n                    .credentialsProvider(getBaseAuth(key))\n                    .region(Region.of(bucket.getRegion()))\n                    .build();\n            ListObjectsRequest listObjects;\n            if (StrUtil.isBlank(keyWord)){\n                 listObjects = ListObjectsRequest\n                        .builder()\n                        .bucket(bucket.getName())\n                        .build();\n            }\n            else {\n                listObjects = ListObjectsRequest\n                        .builder()\n                        .prefix(keyWord)\n                        .bucket(bucket.getName())\n                        .build();\n            }\n            ListObjectsResponse res = s3Client.listObjects(listObjects);\n            List<S3Object> objects = res.contents();\n            return objects;\n        }catch (Exception e){\n            return null;\n        }\n    }\n    public static List<S3Object> getAllFileLists(Key key, Bucket bucket){\n        try {\n            S3Client s3Client = S3Client.builder()\n                    .credentialsProvider(getBaseAuth(key))\n                    .region(Region.of(bucket.getRegion()))\n                    .build();\n            List<S3Object> res = new ArrayList<>();\n            ListObjectsV2Request listObjectsReqManual = ListObjectsV2Request.builder()\n                    .bucket(bucket.getName())\n                    .maxKeys(1000)\n                    .build();\n            ListObjectsV2Response listObjectsResp = s3Client.listObjectsV2(listObjectsReqManual);\n            boolean done = false;\n            while (!done) {\n                res.addAll(listObjectsResp.contents());\n                if (listObjectsResp.nextContinuationToken() == null) {\n                    done = true;\n                }\n                listObjectsReqManual = listObjectsReqManual.toBuilder()\n                        .continuationToken(listObjectsResp.nextContinuationToken())\n                        .build();\n                listObjectsResp = s3Client.listObjectsV2(listObjectsReqManual);\n            }\n            return res;\n        }catch (Exception e){\n            System.out.println(e.getMessage());\n            return null;\n        }\n    }\n    public static Task exportExcel(Key key, Bucket bucket, Task task){\n        List<S3Object> allFileLists = getAllFileLists(key, bucket);\n        List<OssFileLists> lists = new ArrayList<>();\n        for (S3Object f : allFileLists) {\n            lists.add(new OssFileLists(f.key(),\n                    bucket.getEndPoint() + \"/\" + f.key(),\n                    f.size() / 1024,new Date(f.lastModified().getEpochSecond() * 1000)));\n        }\n        File tempFile = FileUtil.createTempFile(String.valueOf(System.currentTimeMillis()), \".xlsx\", true);\n        OssFileLists.createFile(lists,tempFile);\n        task.setStatus(\"成功\");\n        task.setFilename(tempFile.getName());\n        task.setFilePath(tempFile.getAbsolutePath());\n        return task;\n    }\n    public static void uploadFile(Key key, Bucket bucket, String keyName, File file){\n        // 创建 S3Client 对象\n        S3Client s3 = S3Client.builder()\n                .region(Region.of(bucket.getRegion()))\n                .credentialsProvider(getBaseAuth(key))\n                .build();\n        // 读取文件创建requestBody\n        RequestBody requestBody = RequestBody.fromFile(file);\n        PutObjectRequest request = PutObjectRequest.builder()\n                .bucket(bucket.getName())\n                .key(keyName)\n                .build();\n        s3.putObject(request, requestBody);\n    }\n    public static URL createUrl(Key key, Bucket bucket, String keyName){\n        try {\n            S3Presigner presigner = S3Presigner.builder()\n                    .credentialsProvider(getBaseAuth(key))\n                    .region(Region.of(bucket.getRegion()))\n                    .build();\n            Duration expiration = Duration.ofMinutes(10);\n            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()\n                    .signatureDuration(expiration)\n                    .getObjectRequest(builder -> builder\n                            .bucket(bucket.getName())\n                            .key(keyName))\n                    .build();\n            PresignedGetObjectRequest presignedGetObjectRequest = presigner.presignGetObject(presignRequest);\n            URL url = presignedGetObjectRequest.url();\n            presigner.close();\n            return url;\n        }catch (Exception e){\n            return null;\n        }\n    }\n}\n```",
+            "tool_call_id": "tooluse_uJ4hZFvCSFC1GdCN649lSg"
+        },
+        {
+            "role": "assistant",
+            "content": "I've examined the first file that needs to be changed - the S3.java file. This file contains AWS S3 client implementation with methods for listing buckets, getting file lists, uploading files, and generating pre-signed URLs.\n\nLet me continue by checking the other files that need modifications:",
+            "tool_calls": [
+                {
+                    "function": {
+                        "name": "read_file",
+                        "arguments": "{\"filePath\": \"c:\\\\projects\\\\java-migration-examples\\\\cloudSec\\\\pom.xml\", \"startLineNumberBaseZero\": 0, \"endLineNumberBaseZero\": 100}"
+                    },
+                    "id": "tooluse_-sKyjkInQkuowLyhBHnaEA",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "role": "tool",
+            "content": "```\n// filepath: c:\\projects\\java-migration-examples\\cloudSec\\pom.xml\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\t\t xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n\t<modelVersion>4.0.0</modelVersion>\n\t<parent>\n\t\t<groupId>org.springframework.boot</groupId>\n\t\t<artifactId>spring-boot-starter-parent</artifactId>\n\t\t<version>2.7.10-SNAPSHOT</version>\n\t\t<relativePath/> <!-- lookup parent from repository -->\n\t</parent>\n\t<groupId>com.cloud</groupId>\n\t<artifactId>cloudSec</artifactId>\n\t<version>0.0.1-SNAPSHOT</version>\n\t<name>cloudSec</name>\n\t<description>AKSKTools</description>\n\t<properties>\n\t\t<java.version>1.8</java.version>\n\t\t<activemq.version>5.16.6</activemq.version>\n\t\t<skipTests>true</skipTests>\n\t</properties>\n\t<dependencies>\n\t\t<!-- https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper-spring-boot-starter -->\n\t\t<!-- https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper-spring-boot-starter -->\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>tea-console</artifactId>\n\t\t\t<version>0.0.1</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>cs20151215</artifactId>\n\t\t\t<version>4.3.1</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.github.pagehelper</groupId>\n\t\t\t<artifactId>pagehelper-spring-boot-starter</artifactId>\n\t\t\t<version>1.4.6</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-web</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.xerial</groupId>\n\t\t\t<artifactId>sqlite-jdbc</artifactId>\n\t\t\t<version>3.27.2.1</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-test</artifactId>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t\t<!--腾讯云SDK-->\n\t\t<dependency>\n\t\t\t<groupId>com.tencentcloudapi</groupId>\n\t\t\t<artifactId>tencentcloud-sdk-java</artifactId>\n\t\t\t<version>3.1.710</version>\n\t\t</dependency>\n\t\t<!--COS SDK-->\n\t\t<dependency>\n\t\t\t<groupId>com.qcloud</groupId>\n\t\t\t<artifactId>cos_api</artifactId>\n\t\t\t<version>5.6.97</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>software.amazon.awssdk</groupId>\n\t\t\t<artifactId>s3</artifactId>\n\t\t\t<version>2.16.87</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>software.amazon.awssdk</groupId>\n\t\t\t<artifactId>ec2</artifactId>\n\t\t\t<version>2.16.87</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>software.amazon.awssdk</groupId>\n\t\t\t<artifactId>rds</artifactId>\n\t\t\t<version>2.16.87</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>software.amazon.awssdk</groupId>\n\t\t\t<artifactId>iam</artifactId>\n\t\t\t<version>2.16.87</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-websocket</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>cn.dev33</groupId>\n\t\t\t<artifactId>sa-token-spring-boot-starter</artifactId>\n\t\t\t<version>1.34.0</version>\n\t\t</dependency>\n\t\t<!--\t阿里云sdk\t-->\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>ecs20140526</artifactId>\n\t\t\t<version>4.24.56</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.aliyun/alibabacloud-ram20150501 -->\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>alibabacloud-ram20150501</artifactId>\n\t\t\t<version>1.0.0</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>eci20180808</artifactId>\n\t\t\t<version>1.0.0</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.aliyun/ims20190815 -->\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>ims20190815</artifactId>\n\t\t\t<version>3.0.0</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.aliyun/ram20150501 -->\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>ram20150501</artifactId>\n\t\t\t<version>1.0.2</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun.oss</groupId>\n\t\t\t<artifactId>aliyun-sdk-oss</artifactId>\n\t\t\t<version>3.16.1</version>\n\t\t</dependency>\n\t\t<!--华为OBS依赖-->\n\t\t<dependency>\n\t\t\t<groupId>com.huaweicloud</groupId>\n\t\t\t<artifactId>esdk-obs-java-bundle</artifactId>\n\t\t\t<version>3.21.11</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.alibaba/easyexcel -->\n\t\t<!-- https://mvnrepository.com/artifact/com.alibaba/easyexcel -->\n\t\t<dependency>\n\t\t\t<groupId>com.alibaba</groupId>\n\t\t\t<artifactId>easyexcel</artifactId>\n\t\t\t<version>3.2.1</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.huaweicloud.sdk</groupId>\n\t\t\t<artifactId>huaweicloud-sdk-ecs</artifactId>\n\t\t\t<version>3.1.41</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.huaweicloud.sdk/huaweicloud-sdk-rds -->\n\t\t<dependency>\n\t\t\t<groupId>com.huaweicloud.sdk</groupId>\n\t\t\t<artifactId>huaweicloud-sdk-rds</artifactId>\n\t\t\t<version>3.1.41</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.huaweicloud.sdk</groupId>\n\t\t\t<artifactId>huaweicloud-sdk-vpc</artifactId>\n\t\t\t<version>3.1.41</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.huaweicloud.sdk</groupId>\n\t\t\t<artifactId>huaweicloud-sdk-iam</artifactId>\n\t\t\t<version>3.1.32</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>alibabacloud-oss20190517</artifactId>\n\t\t\t<version>1.0.2</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.aliyun/aliyun-java-sdk-rds -->\n\t\t<!-- https://mvnrepository.com/artifact/com.aliyun/alibabacloud-rds20140815 -->\n\t\t<dependency>\n\t\t\t<groupId>com.aliyun</groupId>\n\t\t\t<artifactId>rds20140815</artifactId>\n\t\t\t<version>1.1.5</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.qiniu</groupId>\n\t\t\t<artifactId>qiniu-java-sdk</artifactId>\n\t\t\t<version>[7.7.0, 7.10.99]</version>\n\t\t</dependency>\n\t\t<!-- mybatis-->\n\t\t<dependency>\n\t\t\t<groupId>org.mybatis</groupId>\n\t\t\t<artifactId>mybatis</artifactId>\n\t\t\t<version>3.5.13</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2 -->\n\t\t<dependency>\n\t\t\t<groupId>com.alibaba.fastjson2</groupId>\n\t\t\t<artifactId>fastjson2</artifactId>\n\t\t\t<version>2.0.25</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter -->\n\t\t<dependency>\n\t\t\t<groupId>com.baomidou</groupId>\n\t\t\t<artifactId>mybatis-plus-boot-starter</artifactId>\n\t\t\t<version>3.5.2</version>\n\t\t</dependency>\n\t\t<!-- aop切面 -->\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-aop</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>cn.hutool</groupId>\n\t\t\t<artifactId>hutool-core</artifactId>\n\t\t\t<version>5.8.18</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>cn.hutool</groupId>\n\t\t\t<artifactId>hutool-http</artifactId>\n\t\t\t<version>5.8.18</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.projectlombok</groupId>\n\t\t\t<artifactId>lombok</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.huaweicloud</groupId>\n\t\t\t<artifactId>esdk-obs-java-bundle</artifactId>\n\t\t\t<version>3.23.3</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.huaweicloud.sdk</groupId>\n\t\t\t<artifactId>huaweicloud-sdk-mpc</artifactId>\n\t\t\t<version>3.1.20</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.amazonaws</groupId>\n\t\t\t<artifactId>aws-java-sdk-core</artifactId>\n\t\t\t<version>1.12.83</version>\n\t\t</dependency>\n\t\t<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-log4j2 -->\n\t\t<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-log4j2 -->\n\t</dependencies>\n\t<build>\n\t\t<plugins>\n\t\t\t<plugin>\n\t\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t\t<artifactId>spring-boot-maven-plugin</artifactId>\n\t\t\t</plugin>\n\t\t</plugins>\n\t</build>\n\t<repositories>\n\t\t<repository>\n\t\t\t<id>spring-milestones</id>\n\t\t\t<name>Spring Milestones</name>\n\t\t\t<url>https://repo.spring.io/milestone</url>\n\t\t\t<snapshots>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</snapshots>\n\t\t</repository>\n\t\t<repository>\n\t\t\t<id>spring-snapshots</id>\n\t\t\t<name>Spring Snapshots</name>\n\t\t\t<url>https://repo.spring.io/snapshot</url>\n\t\t\t<releases>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</releases>\n\t\t</repository>\n\t</repositories>\n\t<pluginRepositories>\n\t\t<pluginRepository>\n\t\t\t<id>spring-milestones</id>\n\t\t\t<name>Spring Milestones</name>\n\t\t\t<url>https://repo.spring.io/milestone</url>\n\t\t\t<snapshots>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</snapshots>\n\t\t</pluginRepository>\n\t\t<pluginRepository>\n\t\t\t<id>spring-snapshots</id>\n\t\t\t<name>Spring Snapshots</name>\n\t\t\t<url>https://repo.spring.io/snapshot</url>\n\t\t\t<releases>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</releases>\n\t\t</pluginRepository>\n\t</pluginRepositories>\n</project>\n```",
+            "tool_call_id": "tooluse_-sKyjkInQkuowLyhBHnaEA"
+        },
+        {
+            "role": "assistant",
+            "content": "I've examined the key files that need to be modified for migration from AWS S3 to Azure Blob Storage. Let me check the remaining files to have a complete understanding of the codebase:",
+            "tool_calls": [
+                {
+                    "function": {
+                        "name": "read_file",
+                        "arguments": "{\"startLineNumberBaseZero\": 0, \"endLineNumberBaseZero\": 50, \"filePath\": \"c:\\\\projects\\\\java-migration-examples\\\\cloudSec\\\\src\\\\main\\\\java\\\\com\\\\common\\\\Bucket.java\"}"
+                    },
+                    "id": "tooluse_awCvCuV6QASNBZupUoSRTw",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "role": "tool",
+            "content": "```\n// filepath: c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\Bucket.java\npackage com.common;\nimport cn.dev33.satoken.stp.StpUtil;\nimport cn.hutool.core.date.DateUtil;\nimport cn.hutool.core.io.FileUtil;\nimport com.aliyun.oss.model.OSSObjectSummary;\nimport com.aliyun.oss.model.PutObjectResult;\nimport com.common.aliyun.product.OSS;\nimport com.common.aws.S3;\nimport com.common.huawei.OBS;\nimport com.common.modle.File;\nimport com.common.qiniu.base.BaseAuth;\nimport com.common.tencent.product.COS;\nimport com.domain.Files;\nimport com.domain.Key;\nimport com.obs.services.model.ObsObject;\nimport com.qcloud.cos.model.COSObjectSummary;\nimport com.qiniu.storage.model.FileInfo;\nimport com.qiniu.storage.model.FileListing;\nimport org.springframework.web.multipart.MultipartFile;\nimport software.amazon.awssdk.services.s3.model.S3Object;\nimport java.io.IOException;\nimport java.net.MalformedURLException;\nimport java.net.URL;\nimport java.util.ArrayList;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\npublic class Bucket {\n    public static List<File> geFileLists(Key key, com.domain.Bucket bucket,String keyWord){\n        Type type = Type.valueOf(key.getType());\n        List<File> files = new ArrayList<>();\n        switch (type){\n            case Tencent:\n                List<COSObjectSummary> fileLists = COS.getFileLists(key, bucket,keyWord);\n                for (COSObjectSummary fileList : fileLists) {\n                    files.add(new File(fileList.getKey(), fileList.getOwner().toString(),\n                            \"https://\"  + bucket.getName() + \".\" + bucket.getEndPoint()\n                                    + \"/\" + fileList.getKey(), bucket.getName(),bucket.getId()));\n                }\n                break;\n            case AliYun:\n                List<OSSObjectSummary> lists = OSS.getFileLists(key, bucket,keyWord);\n                for (OSSObjectSummary list : lists) {\n                    files.add(new File(list.getKey(), list.getOwner().toString(),\n                            \"https://\" + bucket.getName() + \".\" + bucket.getEndPoint()\n                                    + \"/\" + list.getKey(), bucket.getName(),bucket.getId()));\n                }\n                break;\n            case QINiu:\n                List<FileListing> fileLists1 = com.common.qiniu.Bucket.getFileLists(bucket, BaseAuth.getAuth(key), keyWord);\n                for (FileListing fileListing : fileLists1) {\n                    for (FileInfo item : fileListing.items) {\n                        files.add(new File(item.key,\"\",\"\",bucket.getName(),bucket.getId()));\n                    }\n                }\n                break;\n            case HUAWEI:\n                List<com.obs.services.model.ObsObject> fileLists2 = OBS.getFileLists(key, bucket,keyWord);\n                for (ObsObject obsObject : fileLists2) {\n                    files.add(new File(obsObject.getObjectKey(),\"\",\"\",bucket.getName(),bucket.getId()));\n                }\n                break;\n            case AWS:\n                List<S3Object> fileLists3 = S3.getFileLists(key, bucket,keyWord);\n                for (S3Object s3Object : fileLists3) {\n                    files.add(new File(s3Object.key(),\"\", \"\",bucket.getName(),bucket.getId()));\n                }\n                break;\n        }\n        return files;\n    }\n    public static URL createFileUrl(Key key, com.domain.Bucket bucket,String keyName,boolean isHttps) throws MalformedURLException {\n        Type type = Type.valueOf(key.getType());\n        URL url = null;\n        switch (type){\n            case Tencent:\n                url = COS.downloadOneFile(key, bucket, keyName);\n                break;\n            case AliYun:\n                url = OSS.downloadOneFile(key, bucket, keyName);\n                break;\n            case QINiu:\n                url = new URL(com.common.qiniu.Bucket.downLoadFile(BaseAuth.getAuth(key),bucket,keyName,isHttps));\n                break;\n            case HUAWEI:\n                url = new URL(OBS.getFileUrl(key,bucket,keyName));\n                break;\n            case AWS:\n                url = S3.createUrl(key,bucket,keyName);\n                break;\n        }\n        return url;\n    }\n    public static List<Files> uploadFile(Key key, com.domain.Bucket bucket, MultipartFile[] files, String filePath) throws IOException {\n        Type type = Type.valueOf(key.getType());\n        String today = String.valueOf(DateUtil.current());\n        Map<String,String> args = new HashMap<>();\n        List<Files> list = new ArrayList<>();\n        for (MultipartFile file : files) {\n            //解析文件\n            String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(\".\"));\n            String localFilePath = String.format(filePath, StpUtil.getLoginId().toString(), today);\n            java.io.File file1 = FileUtil.newFile(localFilePath + fileType);\n            FileUtil.writeBytes(file.getBytes(),file1);\n            Files f = new Files();\n            f.setOriginalFileName(file.getOriginalFilename());\n            f.setTpye(fileType);\n            f.setUserId(Integer.valueOf(StpUtil.getLoginId().toString()));\n            f.setFileSize(String.valueOf(FileUtil.size(file1)));\n            args.put(\"url\",f.getFilePath());\n            args.put(\"name\",f.getOriginalFileName());\n            args.put(\"size\",f.getFileSize());\n            args.put(\"mimetype\",file.getContentType());\n            args.put(\"full_url\",f.getFilePath());\n            args.put(\"suffix\",fileType);\n            //上传到存储桶\n            switch (type){\n                case Tencent:\n                    COS.uploadFile(key, bucket, file1, f.getOriginalFileName());\n                    f.setFilePath(\"https://\" + bucket.getName() + \".\" + bucket.getEndPoint() + \".\" + \"/\" + f.getOriginalFileName());\n                    break;\n                case AliYun:\n                    PutObjectResult putObjectResult = OSS.uploadFile(key, bucket, f.getOriginalFileName(), file1);\n                    String uri = putObjectResult.getResponse().getUri();\n                    f.setFilePath(uri);\n                    break;\n                case QINiu:\n                    com.common.qiniu.Bucket.uploadFile(BaseAuth.getAuth(key),bucket,file1.getName(),file1);\n                    f.setFilePath(\"https://\" + bucket.getName() + \".\" + bucket.getEndPoint() + \".\" + \"/\" + f.getOriginalFileName());\n                    break;\n                case HUAWEI:\n                    OBS.uploadFile(key,file1,bucket);\n                    f.setFilePath(\"https://\" + bucket.getName() + \".\" + bucket.getEndPoint() + \".\" + \"/\" + f.getOriginalFileName());\n                    break;\n                case AWS:\n                    S3.uploadFile(key, bucket, file1.getName(), file1);\n                    f.setFilePath(\"https://\" + bucket.getName() + \".\" + bucket.getEndPoint() + \".\" + \"/\" + f.getOriginalFileName());\n                    break;\n            }\n            list.add(f);\n        }\n        return list;\n    }\n}\n```",
+            "tool_call_id": "tooluse_awCvCuV6QASNBZupUoSRTw"
+        },
+        {
+            "role": "user",
+            "content": "Above is the result of calling one or more tools. The user cannot see the results, so you should explain them to the user if referencing them in your answer. Continue from where you left off without repeating yourself."
+        }
+    ],
+    "model": "claude-3.7-sonnet",
+    "temperature": 0,
+    "top_p": 1,
+    "max_tokens": 8192,
+    "tools": [
+        {
+            "function": {
+                "name": "semantic_search",
+                "description": "Run a natural language search for relevant code or documentation comments from the user's current workspace. Returns relevant code snippets from the user's current workspace if it is large, or the full contents of the workspace if it is small.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The query to search the codebase for. Should contain all relevant context. Should ideally be text that might appear in the codebase, such as function names, variable names, or comments."
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "file_search",
+                "description": "Search for files in the workspace by glob pattern. This only returns the paths of matching files. Limited to 20 results. Use this tool when you know the exact filename pattern of the files you're searching for. Glob patterns match from the root of the workspace folder. Examples:\n- **/*.{js,ts} to match all js/ts files in the workspace.\n- src/** to match all files under the top-level src folder.\n- **/foo/**/*.js to match all js files under any foo folder in the workspace.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Search for files with names or paths matching this query. Can be a glob pattern."
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "grep_search",
+                "description": "Do a text search in the workspace. Limited to 20 results. Use this tool when you know the exact string you're searching for.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The pattern to search for in files in the workspace. Can be a regex or plain text pattern"
+                        },
+                        "isRegexp": {
+                            "type": "boolean",
+                            "description": "Whether the pattern is a regex. False by default."
+                        },
+                        "includePattern": {
+                            "type": "string",
+                            "description": "Search files matching this glob pattern. Will be applied to the relative path of files within the workspace."
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "read_file",
+                "description": "Read the contents of a file.\n\nYou must specify the line range you're interested in, and if the file is larger, you will be given an outline of the rest of the file. If the file contents returned are insufficient for your task, you may call this tool again to retrieve more content.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "filePath": {
+                            "description": "The absolute path of the file to read.",
+                            "type": "string"
+                        },
+                        "startLineNumberBaseZero": {
+                            "type": "number",
+                            "description": "The line number to start reading from, 0-based."
+                        },
+                        "endLineNumberBaseZero": {
+                            "type": "number",
+                            "description": "The inclusive line number to end reading at, 0-based."
+                        }
+                    },
+                    "required": [
+                        "filePath",
+                        "startLineNumberBaseZero",
+                        "endLineNumberBaseZero"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "list_dir",
+                "description": "List the contents of a directory. Result will have the name of the child. If the name ends in /, it's a folder, otherwise a file",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {
+                            "type": "string",
+                            "description": "The absolute path to the directory to list."
+                        }
+                    },
+                    "required": [
+                        "path"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "run_in_terminal",
+                "description": "Run a shell command in a terminal. State is persistent across tool calls.\n- Use this tool instead of printing a shell codeblock and asking the user to run it.\n- If the command is a long-running background process, you MUST pass isBackground=true. Background terminals will return a terminal ID which you can use to check the output of a background process with get_terminal_output.\n- If a command may use a pager, you must something to disable it. For example, you can use `git --no-pager`. Otherwise you should add something like ` | cat`. Examples: git, less, man, etc.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "command": {
+                            "type": "string",
+                            "description": "The command to run in the terminal."
+                        },
+                        "explanation": {
+                            "type": "string",
+                            "description": "A one-sentence description of what the command does. This will be shown to the user before the command is run."
+                        },
+                        "isBackground": {
+                            "type": "boolean",
+                            "description": "Whether the command starts a background process. If true, the command will run in the background and you will not see the output. If false, the tool call will block on the command finishing, and then you will get the output. Examples of backgrond processes: building in watch mode, starting a server. You can check the output of a backgrond process later on by using get_terminal_output."
+                        }
+                    },
+                    "required": [
+                        "command",
+                        "explanation",
+                        "isBackground"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "get_terminal_output",
+                "description": "Get the output of a terminal command previous started with run_in_terminal",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID of the terminal command output to check."
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "get_errors",
+                "description": "Get any compile or lint errors in a code file. If the user mentions errors or problems in a file, they may be referring to these. Use the tool to see the same errors that the user is seeing. Also use this tool after editing a file to validate the change.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "filePaths": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "filePaths"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "get_changed_files",
+                "description": "Get git diffs of current file changes in the active git repository. Don't forget that you can use run_in_terminal to run git commands in a terminal as well.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "repositoryPath": {
+                            "type": "string",
+                            "description": "The absolute path to the git repository to look for changes in."
+                        },
+                        "sourceControlState": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "staged",
+                                    "unstaged",
+                                    "merge-conflicts"
+                                ]
+                            },
+                            "description": "The kinds of git state to filter by. Allowed values are: 'staged', 'unstaged', and 'merge-conflicts'. If not provided, all states will be included."
+                        }
+                    },
+                    "required": [
+                        "repositoryPath"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "edit_file",
+                "description": "Edit a file in the workspace. Use this tool once per file that needs to be modified, even if there are multiple changes for a file. Generate the \"explanation\" property first.\nThe user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:\n// ...existing code...\n{ changed code }\n// ...existing code...\n{ changed code }\n// ...existing code...\n\nHere is an example of how you should use format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\treturn this.age;\n\t}\n}",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "explanation": {
+                            "type": "string",
+                            "description": "A short explanation of the edit being made. Can be the same as the explanation you showed to the user."
+                        },
+                        "filePath": {
+                            "type": "string",
+                            "description": "An absolute path to the file to edit, or the URI of a untitled, not yet named, file, such as `untitled:Untitled-1."
+                        },
+                        "code": {
+                            "type": "string",
+                            "description": "The code change to apply to the file.\nThe user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:\n// ...existing code...\n{ changed code }\n// ...existing code...\n{ changed code }\n// ...existing code...\n\nHere is an example of how you should use format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}"
+                        }
+                    },
+                    "required": [
+                        "explanation",
+                        "filePath",
+                        "code"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "migration_guideline",
+                "description": "A tool designed to assist users in performing code changes during migration to azure by providing a detailed migration guideline. This tool is the first step in the migration process and offers recommendations based on user input. Users can optionally provide a formula to get guideline, but it is not mandatory. The tool generates and returns a migration guideline, including the files that need to be modified , change rules and the specific steps required for implementing the changes.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "formulaName": {
+                            "type": "string",
+                            "description": "The formula name to get the guideline.",
+                            "default": ""
+                        },
+                        "migrationScenario": {
+                            "type": "string",
+                            "description": "The migration scenario according to user intent"
+                        }
+                    },
+                    "required": [
+                        "migrationScenario"
+                    ]
+                }
+            },
+            "type": "function"
+        },
+        {
+            "function": {
+                "name": "migration_change_code",
+                "description": "A tool to assist in code migration by generating modified code based on a rule name and file path. This tool is used after the user identifies the files that need changes and provides rules related to the file in the context. Before edit_file is called and rules are provided, this tool can generates and returns the modified code based on the rules and file path directly and in this case, you needn't to read the file content. Be careful, this tool can only be called with a maximum of 2 instances in parallel.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "rules": {
+                            "type": "string",
+                            "description": "A rule list seperated by comma can to be applied to the one code file to change the code. The user provides the list to retrieve the updated code. The rules are based on the migration guideline. If no rules are provided, this tools should not be called"
+                        },
+                        "filePath": {
+                            "type": "string",
+                            "description": "The path of the file that requires code modifications. The user provides this to retrieve the updated code."
+                        },
+                        "migrationScenario": {
+                            "type": "object",
+                            "properties": {
+                                "paramName": {
+                                    "type": "string",
+                                    "description": "The migration scenario according to user intent"
+                                }
+                            }
+                        }
+                    },
+                    "required": [
+                        "rules",
+                        "filePath"
+                    ]
+                }
+            },
+            "type": "function"
+        }
+    ],
+    "n": 1,
+    "stream": true
+}

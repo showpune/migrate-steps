@@ -2,11 +2,312 @@
   "messages": [
     {
       "role": "system",
-      "content": "You are an AI programming assistant.\nWhen asked for your name, you must respond with \"GitHub Copilot\".\nFollow the user's requirements carefully & to the letter.\nFollow Microsoft content policies.\nAvoid content that violates copyrights.\nIf you are asked to generate content that is harmful, hateful, racist, sexist, lewd, violent, or completely irrelevant to software engineering, only respond with \"Sorry, I can't assist with that.\"\nKeep your answers short and impersonal.\n<instructions>\nYou are a highly sophisticated automated coding agent with expert-level knowledge across many different programming languages and frameworks.\nThe user will ask a question, or ask you to perform a task, and it may require lots of research to answer correctly. There is a selection of tools that let you perform actions or retrieve helpful context to answer the user's question.\nIf you can infer the project type (languages, frameworks, and libraries) from the user's query or the context that you have, make sure to keep them in mind when making changes.\nIf the user wants you to implement a feature and they have not specified the files to edit, first break down the user's request into smaller concepts and think about the kinds of files you need to grasp each concept.\nIf you aren't sure which tool is relevant, you can call multiple tools. You can call tools repeatedly to take actions or gather as much context as needed until you have completed the task fully. Don't give up unless you are sure the request cannot be fulfilled with the tools you have. It's YOUR RESPONSIBILITY to make sure that you have done all you can to collect necessary context.\nPrefer using the semantic_search tool to search for context unless you know the exact string or filename pattern you're searching for.\nDon't make assumptions about the situation- gather context first, then perform the task or answer the question.\nThink creatively and explore the workspace in order to make a complete fix.\nDon't repeat yourself after a tool call, pick up where you left off.\nNEVER print out a codeblock with file changes unless the user asked for it. Use the edit_file tool instead.\nNEVER print out a codeblock with a terminal command to run unless the user asked for it. Use the run_in_terminal tool instead.\nYou don't need to read a file if it's already provided in context.\n</instructions>\n<toolUseInstructions>\nWhen using a tool, follow the json schema very carefully and make sure to include ALL required properties.\nAlways output valid JSON when using a tool.\nIf a tool exists to do a task, use the tool instead of asking the user to manually take an action.\nIf you say that you will take an action, then go ahead and use the tool to do it. No need to ask permission.\nNever use multi_tool_use.parallel or any tool that does not exist. Use tools using the proper procedure, DO NOT write out a json codeblock with the tool inputs.\nNever say the name of a tool to a user.\nIf you think running multiple tools can answer the user's question, prefer calling them in parallel whenever possible, but do not call semantic_search in parallel.\nIf semantic_search returns the full contents of the text files in the workspace, you have all the workspace context.\nDon't call the run_in_terminal tool multiple times in parallel. Instead, run one command and wait for the output before running the next command.\nAfter you have performed the user's task, if the user corrected something you did, expressed a coding preference, or communicated a fact that you need to remember, use the updateUserPreferences tool to save their preferences.\n\n</toolUseInstructions>\n<editFileInstructions>\nDon't try to edit an existing file without reading it first, so you can make changes properly.\nUse the edit_file tool to edit files. When editing files, group your changes by file.\nNEVER show the changes to the user, just call the tool, and the edits will be applied and shown to the user.\nNEVER print a codeblock that represents a change to a file, use edit_file instead.\nFor each file, give a short description of what needs to be changed, then use the edit_file tool. You can use any tool multiple times in a response, and you can keep writing text after using a tool.\nFollow best practices when editing files. If a popular external library exists to solve a problem, use it and properly install the package e.g. with \"npm install\" or creating a \"requirements.txt\".\nAfter editing a file, you MUST call get_errors to validate the change. Fix the errors if they are relevant to your change or the prompt, and remember to validate that they were actually fixed.\nThe edit_file tool is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The tool prefers that you are as concise as possible. For example:\n// ...existing code...\nchanged code\n// ...existing code...\nchanged code\n// ...existing code...\n\nHere is an example of how you should format an edit to an existing Person class:\nclass Person {\n\t// {EXISTING_CODE_MARKER}\n\tage: number;\n\t// {EXISTING_CODE_MARKER}\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}\n</editFileInstructions>"
+      "content": "You are an AI programming assistant.
+When asked for your name, you must respond with \"GitHub Copilot\".
+Follow the user's requirements carefully & to the letter.
+Follow Microsoft content policies.
+Avoid content that violates copyrights.
+If you are asked to generate content that is harmful, hateful, racist, sexist, lewd, violent, or completely irrelevant to software engineering, only respond with \"Sorry, I can't assist with that.\"
+Keep your answers short and impersonal.
+<instructions>
+You are a highly sophisticated automated coding agent with expert-level knowledge across many different programming languages and frameworks.
+The user will ask a question, or ask you to perform a task, and it may require lots of research to answer correctly. There is a selection of tools that let you perform actions or retrieve helpful context to answer the user's question.
+If you can infer the project type (languages, frameworks, and libraries) from the user's query or the context that you have, make sure to keep them in mind when making changes.
+If the user wants you to implement a feature and they have not specified the files to edit, first break down the user's request into smaller concepts and think about the kinds of files you need to grasp each concept.
+If you aren't sure which tool is relevant, you can call multiple tools. You can call tools repeatedly to take actions or gather as much context as needed until you have completed the task fully. Don't give up unless you are sure the request cannot be fulfilled with the tools you have. It's YOUR RESPONSIBILITY to make sure that you have done all you can to collect necessary context.
+Prefer using the semantic_search tool to search for context unless you know the exact string or filename pattern you're searching for.
+Don't make assumptions about the situation- gather context first, then perform the task or answer the question.
+Think creatively and explore the workspace in order to make a complete fix.
+Don't repeat yourself after a tool call, pick up where you left off.
+NEVER print out a codeblock with file changes unless the user asked for it. Use the edit_file tool instead.
+NEVER print out a codeblock with a terminal command to run unless the user asked for it. Use the run_in_terminal tool instead.
+You don't need to read a file if it's already provided in context.
+</instructions>
+<toolUseInstructions>
+When using a tool, follow the json schema very carefully and make sure to include ALL required properties.
+Always output valid JSON when using a tool.
+If a tool exists to do a task, use the tool instead of asking the user to manually take an action.
+If you say that you will take an action, then go ahead and use the tool to do it. No need to ask permission.
+Never use multi_tool_use.parallel or any tool that does not exist. Use tools using the proper procedure, DO NOT write out a json codeblock with the tool inputs.
+Never say the name of a tool to a user.
+If you think running multiple tools can answer the user's question, prefer calling them in parallel whenever possible, but do not call semantic_search in parallel.
+If semantic_search returns the full contents of the text files in the workspace, you have all the workspace context.
+Don't call the run_in_terminal tool multiple times in parallel. Instead, run one command and wait for the output before running the next command.
+After you have performed the user's task, if the user corrected something you did, expressed a coding preference, or communicated a fact that you need to remember, use the updateUserPreferences tool to save their preferences.
+
+</toolUseInstructions>
+<editFileInstructions>
+Don't try to edit an existing file without reading it first, so you can make changes properly.
+Use the edit_file tool to edit files. When editing files, group your changes by file.
+NEVER show the changes to the user, just call the tool, and the edits will be applied and shown to the user.
+NEVER print a codeblock that represents a change to a file, use edit_file instead.
+For each file, give a short description of what needs to be changed, then use the edit_file tool. You can use any tool multiple times in a response, and you can keep writing text after using a tool.
+Follow best practices when editing files. If a popular external library exists to solve a problem, use it and properly install the package e.g. with \"npm install\" or creating a \"requirements.txt\".
+After editing a file, you MUST call get_errors to validate the change. Fix the errors if they are relevant to your change or the prompt, and remember to validate that they were actually fixed.
+The edit_file tool is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.
+Avoid repeating existing code, instead use comments to represent regions of unchanged code. The tool prefers that you are as concise as possible. For example:
+// ...existing code...
+changed code
+// ...existing code...
+changed code
+// ...existing code...
+
+Here is an example of how you should format an edit to an existing Person class:
+class Person {
+  // {EXISTING_CODE_MARKER}
+  age: number;
+  // {EXISTING_CODE_MARKER}
+  getAge() {
+    return this.age;
+  }
+}
+</editFileInstructions>"
     },
     {
       "role": "user",
-      "content": "<context>\nMy current OS is: Windows\nI am working in a workspace with the following folders:\n- c:\\projects\\eventostec-backend\nI am working in a workspace that has the following structure:\n```\ndocker-compose.yml\nDockerfile\nmvnw\nmvnw.cmd\npom.xml\nREADME.md\nsrc/\n\tmain/\n\t\tjava/\n\t\t\tcom/\n\t\t\t\teventostec/\n\t\t\t\t\tapi/\n\t\t\t\t\t\tApiApplication.java\n\t\t\t\t\t\tconfig/\n\t\t\t\t\t\t\t...\n\t\t\t\t\t\tcontroller/\n\t\t\t\t\t\tdomain/\n\t\t\t\t\t\texceptions/\n\t\t\t\t\t\tmappers/\n\t\t\t\t\t\trepositories/\n\t\t\t\t\t\tservice/\n\t\t\t\t\t\tutils/\n\t\tresources/\n\t\t\tapplication.properties\n\t\t\tdb/\n\t\t\t\tmigration/\n\t\t\t\t\tV1__create-event-table.sql\n\t\t\t\t\tV2__create-table-coupon.sql\n\t\t\t\t\tV3__create-table-address.sql\n\t\t\t\t\tV4__alter-table-event.sql\n\t\t\t\t\tV5__clear-prod-db.sql\n\t\t\t\t\tV6__alter-table-event.sql\n\ttest/\n\t\tjava/\n\t\t\tcom/\n\t\t\t\teventostec/\n\t\t\t\t\tapi/\n\t\t\t\t\t\tApiApplicationTests.java\n\t\t\t\t\t\tcontroller/\n\t\t\t\t\t\tservice/\n\t\tresources/\n\t\t\tapplication-test.properties\ntarget/\n\tclasses/\n\t\tapplication.properties\n\t\tcom/\n\t\t\teventostec/\n\t\t\t\tapi/\n\t\t\t\t\tApiApplication.class\n\t\t\t\t\tconfig/\n\t\t\t\t\t\tAWSConfig.class\n\t\t\t\t\t\tCorsConfig.class\n\t\t\t\t\tcontroller/\n\t\t\t\t\t\tCouponController.class\n\t\t\t\t\t\tEventController.class\n\t\t\t\t\tdomain/\n\t\t\t\t\t\taddress/\n\t\t\t\t\t\tcoupon/\n\t\t\t\t\t\tevent/\n\t\t\t\t\texceptions/\n\t\t\t\t\t\tconfig/\n\t\t\t\t\tmappers/\n\t\t\t\t\t\tEventMapper.class\n\t\t\t\t\t\tEventMapperImpl.class\n\t\t\t\t\trepositories/\n\t\t\t\t\t\tAddressRepository.class\n\t\t\t\t\t\tCouponRepository.class\n\t\t\t\t\t\tEventRepository.class\n\t\t\t\t\tservice/\n\t\t\t\t\t\tAddressService.class\n\t\t\t\t\t\tCouponService.class\n\t\t\t\t\t\tEventService.class\n\t\t\t\t\tutils/\n\t\t\t\t\t\tExceptionUtil.class\n\t\tdb/\n\t\t\tmigration/\n\t\t\t\tV1__create-event-table.sql\n\t\t\t\tV2__create-table-coupon.sql\n\t\t\t\tV3__create-table-address.sql\n\t\t\t\tV4__alter-table-event.sql\n\t\t\t\tV5__clear-prod-db.sql\n\t\t\t\tV6__alter-table-event.sql\n\tgenerated-sources/\n\t\tannotations/\n\t\t\tcom/\n\t\t\t\teventostec/\n\t\t\t\t\tapi/\n\t\t\t\t\t\tmappers/\n\tgenerated-test-sources/\n\t\ttest-annotations/\n\tmaven-status/\n\t\tmaven-compiler-plugin/\n\t\t\tcompile/\n\t\t\t\tdefault-compile/\n\t\t\t\t\tcreatedFiles.lst\n\t\t\t\t\tinputFiles.lst\n\ttest-classes/\n\t\tapplication-test.properties\n\t\tcom/\n\t\t\teventostec/\n\t\t\t\tapi/\n\t\t\t\t\tApiApplicationTests.class\n\t\t\t\t\tcontroller/\n\t\t\t\t\t\tCouponControllerTest.class\n\t\t\t\t\t\tEventControllerTest.class\n\t\t\t\t\tservice/\n\t\t\t\t\t\tAddressServiceTest.class\n\t\t\t\t\t\t...\n```\nThis view of the workspace structure may be truncated. You can use tools to collect more context if needed.\n</context>\n<file>\n```java\n// filepath: c:\\projects\\eventostec-backend\\src\\main\\java\\com\\eventostec\\api\\utils\\ExceptionUtil.java\npackage com.eventostec.api.utils;\r\n\r\nimport com.eventostec.api.exceptions.config.ProblemDetails;\r\nimport jakarta.servlet.http.HttpServletRequest;\r\nimport org.springframework.core.convert.ConversionFailedException;\r\nimport org.springframework.http.HttpStatus;\r\nimport org.springframework.validation.FieldError;\r\nimport org.springframework.web.bind.MethodArgumentNotValidException;\r\nimport org.springframework.web.bind.MissingServletRequestParameterException;\r\nimport org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;\r\n\r\nimport java.util.Optional;\r\n\r\npublic final class ExceptionUtil {\r\n\r\n    public static final String TIPO_DESCONHECIDO = \"tipo desconhecido\";\r\n    public static final String VALOR_NAO_INFORMADO = \"valor não informado\";\r\n\r\n    private ExceptionUtil() {\r\n        throw new IllegalStateException(\"Cannot be instantiated\");\r\n    }\r\n\r\n    public static ProblemDetails getProblemDetails(HttpServletRequest request, Exception ex) {\r\n        return switch (ex.getClass().getSimpleName()) {\r\n            case \"MethodArgumentTypeMismatchException\" -> handleMethodArgumentTypeMismatch((MethodArgumentTypeMismatchException) ex, request);\r\n            case \"MissingServletRequestParameterException\" ->\r\n                    handleMissingServletRequestParameter((MissingServletRequestParameterException) ex, request);\r\n            case \"DataIntegrityViolationException\" -> handleDataIntegrityViolation(request);\r\n            case \"MethodArgumentNotValidException\" -> handleMethodArgumentNotValid((MethodArgumentNotValidException) ex, request);\r\n            case \"ConversionFailedException\" -> handleConversionFailed((ConversionFailedException) ex, request);\r\n            default -> new ProblemDetails(\r\n                    \"Erro não especificado\",\r\n                    HttpStatus.BAD_REQUEST.value(),\r\n                    HttpStatus.BAD_REQUEST.getReasonPhrase(),\r\n                    \"Ocorreu um erro inesperado.\",\r\n                    request.getRequestURI()\r\n            );\r\n        };\r\n    }\r\n\r\n    private static ProblemDetails handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {\r\n        String title = \"Campo inválido informado\";\r\n        String fieldName = ex.getName();\r\n        String requiredType = Optional.ofNullable(ex.getRequiredType())\r\n                .map(Class::getSimpleName)\r\n                .orElse(TIPO_DESCONHECIDO);\r\n        String invalidValue = Optional.ofNullable(ex.getValue())\r\n                .map(Object::toString)\r\n                .orElse(VALOR_NAO_INFORMADO);\r\n        String detail = String.format(\"O campo '%s' recebeu um valor inválido: '%s'. Esperava-se um valor do tipo '%s'.\", fieldName, invalidValue, requiredType);\r\n\r\n        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r\n    }\r\n\r\n    private static ProblemDetails handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpServletRequest request) {\r\n        String title = \"Campo não informado\";\r\n        String detail = String.format(\"O dado do campo '%s' não foi informado.\", ex.getParameterName());\r\n\r\n        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r\n    }\r\n\r\n    private static ProblemDetails handleDataIntegrityViolation(HttpServletRequest request) {\r\n        String title = \"Violação de integridade de campo\";\r\n        String detail = \"Violação de integridade detectada no banco de dados.\";\r\n\r\n        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r\n    }\r\n\r\n    private static ProblemDetails handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpServletRequest request) {\r\n        String title = \"Validação de campo violada\";\r\n        String failedValidationMessage = \"A validação falhou em um campo não identificado.\";\r\n        String detail;\r\n\r\n        if (ex.getBindingResult().hasFieldErrors()) {\r\n            FieldError fieldError = ex.getBindingResult().getFieldError();\r\n            if (fieldError != null) {\r\n                String violatedField = fieldError.getField();\r\n                String errorMessage = fieldError.getDefaultMessage();\r\n\r\n                if (errorMessage != null && errorMessage.contains(\"Failed to convert value of type\")) {\r\n                    String rejectedValue = Optional.ofNullable(fieldError.getRejectedValue())\r\n                            .map(Object::toString)\r\n                            .orElse(VALOR_NAO_INFORMADO);\r\n                    errorMessage = String.format(\"'%s' não é válido.\", rejectedValue);\r\n                }\r\n\r\n                detail = String.format(\"A validação do campo '%s' falhou: %s.\", violatedField, errorMessage);\r\n            } else {\r\n                detail = failedValidationMessage;\r\n            }\r\n        } else {\r\n            detail = failedValidationMessage;\r\n        }\r\n\r\n        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r\n    }\r\n\r\n    private static ProblemDetails handleConversionFailed(ConversionFailedException ex, HttpServletRequest request) {\r\n        String title = \"Campo inválido informado\";\r\n        String invalidValue = Optional.ofNullable(ex.getValue())\r\n                .map(Object::toString)\r\n                .orElse(VALOR_NAO_INFORMADO);\r\n        String requiredType = Optional.of(ex.getTargetType())\r\n                .map(typeDescriptor -> typeDescriptor.getType().getSimpleName())\r\n                .orElse(TIPO_DESCONHECIDO);\r\n        String detail = String.format(\"O valor '%s' fornecido é inválido. Esperava-se um valor do tipo '%s'.\", invalidValue, requiredType);\r\n\r\n        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r\n    }\r\n}\n```\n</file>\n\n<reminder>\nWhen using the edit_file tool, avoid repeating existing code, instead use a line comment with `...existing code...` to represent regions of unchanged code.\n</reminder>\n<prompt>\nYou are an Azure Java Migration AI Assistant specializing in cloud platform transition, you are responsible to change the code in the project to Azure following below steps\r\n1) Check the dependencies definition in current project (pom.xml or gradle setting) if any dependencies is not supported in azure, if not, replace Azure SDK equivalents. Please be awared to add the Azure SDK with the same framework. for example, if the code before change use spring, the added Azure SDK equivalents need use the spring.\r\n2) Change the Java code to used the azure SDK equivalents.\r\n3) Check the configuration to adapt the azure sdk equivalents.\r\n4) Check the changed file and Get any compile or lint errors, if there is any error, fix it\n</prompt>"
+      "content": "<context>
+My current OS is: Windows
+I am working in a workspace with the following folders:
+- c:\\projects\\eventostec-backend
+I am working in a workspace that has the following structure:
+```
+docker-compose.yml
+Dockerfile
+mvnw
+mvnw.cmd
+pom.xml
+README.md
+src/
+  main/
+    java/
+      com/
+        eventostec/
+          api/
+            ApiApplication.java
+            config/
+              ...
+            controller/
+            domain/
+            exceptions/
+            mappers/
+            repositories/
+            service/
+            utils/
+    resources/
+      application.properties
+      db/
+        migration/
+          V1__create-event-table.sql
+          V2__create-table-coupon.sql
+          V3__create-table-address.sql
+          V4__alter-table-event.sql
+          V5__clear-prod-db.sql
+          V6__alter-table-event.sql
+  test/
+    java/
+      com/
+        eventostec/
+          api/
+            ApiApplicationTests.java
+            controller/
+            service/
+    resources/
+      application-test.properties
+target/
+  classes/
+    application.properties
+    com/
+      eventostec/
+        api/
+          ApiApplication.class
+          config/
+            AWSConfig.class
+            CorsConfig.class
+          controller/
+            CouponController.class
+            EventController.class
+          domain/
+            address/
+            coupon/
+            event/
+          exceptions/
+            config/
+          mappers/
+            EventMapper.class
+            EventMapperImpl.class
+          repositories/
+            AddressRepository.class
+            CouponRepository.class
+            EventRepository.class
+          service/
+            AddressService.class
+            CouponService.class
+            EventService.class
+          utils/
+            ExceptionUtil.class
+    db/
+      migration/
+        V1__create-event-table.sql
+        V2__create-table-coupon.sql
+        V3__create-table-address.sql
+        V4__alter-table-event.sql
+        V5__clear-prod-db.sql
+        V6__alter-table-event.sql
+  generated-sources/
+    annotations/
+      com/
+        eventostec/
+          api/
+            mappers/
+  generated-test-sources/
+    test-annotations/
+  maven-status/
+    maven-compiler-plugin/
+      compile/
+        default-compile/
+          createdFiles.lst
+          inputFiles.lst
+  test-classes/
+    application-test.properties
+    com/
+      eventostec/
+        api/
+          ApiApplicationTests.class
+          controller/
+            CouponControllerTest.class
+            EventControllerTest.class
+          service/
+            AddressServiceTest.class
+            ...
+```
+This view of the workspace structure may be truncated. You can use tools to collect more context if needed.
+</context>
+<file>
+```java
+// filepath: c:\\projects\\eventostec-backend\\src\\main\\java\\com\\eventostec\\api\\utils\\ExceptionUtil.java
+package com.eventostec.api.utils;\r
+\r
+import com.eventostec.api.exceptions.config.ProblemDetails;\r
+import jakarta.servlet.http.HttpServletRequest;\r
+import org.springframework.core.convert.ConversionFailedException;\r
+import org.springframework.http.HttpStatus;\r
+import org.springframework.validation.FieldError;\r
+import org.springframework.web.bind.MethodArgumentNotValidException;\r
+import org.springframework.web.bind.MissingServletRequestParameterException;\r
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;\r
+\r
+import java.util.Optional;\r
+\r
+public final class ExceptionUtil {\r
+\r
+    public static final String TIPO_DESCONHECIDO = \"tipo desconhecido\";\r
+    public static final String VALOR_NAO_INFORMADO = \"valor não informado\";\r
+\r
+    private ExceptionUtil() {\r
+        throw new IllegalStateException(\"Cannot be instantiated\");\r
+    }\r
+\r
+    public static ProblemDetails getProblemDetails(HttpServletRequest request, Exception ex) {\r
+        return switch (ex.getClass().getSimpleName()) {\r
+            case \"MethodArgumentTypeMismatchException\" -> handleMethodArgumentTypeMismatch((MethodArgumentTypeMismatchException) ex, request);\r
+            case \"MissingServletRequestParameterException\" ->\r
+                    handleMissingServletRequestParameter((MissingServletRequestParameterException) ex, request);\r
+            case \"DataIntegrityViolationException\" -> handleDataIntegrityViolation(request);\r
+            case \"MethodArgumentNotValidException\" -> handleMethodArgumentNotValid((MethodArgumentNotValidException) ex, request);\r
+            case \"ConversionFailedException\" -> handleConversionFailed((ConversionFailedException) ex, request);\r
+            default -> new ProblemDetails(\r
+                    \"Erro não especificado\",\r
+                    HttpStatus.BAD_REQUEST.value(),\r
+                    HttpStatus.BAD_REQUEST.getReasonPhrase(),\r
+                    \"Ocorreu um erro inesperado.\",\r
+                    request.getRequestURI()\r
+            );\r
+        };\r
+    }\r
+\r
+    private static ProblemDetails handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {\r
+        String title = \"Campo inválido informado\";\r
+        String fieldName = ex.getName();\r
+        String requiredType = Optional.ofNullable(ex.getRequiredType())\r
+                .map(Class::getSimpleName)\r
+                .orElse(TIPO_DESCONHECIDO);\r
+        String invalidValue = Optional.ofNullable(ex.getValue())\r
+                .map(Object::toString)\r
+                .orElse(VALOR_NAO_INFORMADO);\r
+        String detail = String.format(\"O campo '%s' recebeu um valor inválido: '%s'. Esperava-se um valor do tipo '%s'.\", fieldName, invalidValue, requiredType);\r
+\r
+        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r
+    }\r
+\r
+    private static ProblemDetails handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpServletRequest request) {\r
+        String title = \"Campo não informado\";\r
+        String detail = String.format(\"O dado do campo '%s' não foi informado.\", ex.getParameterName());\r
+\r
+        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r
+    }\r
+\r
+    private static ProblemDetails handleDataIntegrityViolation(HttpServletRequest request) {\r
+        String title = \"Violação de integridade de campo\";\r
+        String detail = \"Violação de integridade detectada no banco de dados.\";\r
+\r
+        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r
+    }\r
+\r
+    private static ProblemDetails handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpServletRequest request) {\r
+        String title = \"Validação de campo violada\";\r
+        String failedValidationMessage = \"A validação falhou em um campo não identificado.\";\r
+        String detail;\r
+\r
+        if (ex.getBindingResult().hasFieldErrors()) {\r
+            FieldError fieldError = ex.getBindingResult().getFieldError();\r
+            if (fieldError != null) {\r
+                String violatedField = fieldError.getField();\r
+                String errorMessage = fieldError.getDefaultMessage();\r
+\r
+                if (errorMessage != null && errorMessage.contains(\"Failed to convert value of type\")) {\r
+                    String rejectedValue = Optional.ofNullable(fieldError.getRejectedValue())\r
+                            .map(Object::toString)\r
+                            .orElse(VALOR_NAO_INFORMADO);\r
+                    errorMessage = String.format(\"'%s' não é válido.\", rejectedValue);\r
+                }\r
+\r
+                detail = String.format(\"A validação do campo '%s' falhou: %s.\", violatedField, errorMessage);\r
+            } else {\r
+                detail = failedValidationMessage;\r
+            }\r
+        } else {\r
+            detail = failedValidationMessage;\r
+        }\r
+\r
+        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r
+    }\r
+\r
+    private static ProblemDetails handleConversionFailed(ConversionFailedException ex, HttpServletRequest request) {\r
+        String title = \"Campo inválido informado\";\r
+        String invalidValue = Optional.ofNullable(ex.getValue())\r
+                .map(Object::toString)\r
+                .orElse(VALOR_NAO_INFORMADO);\r
+        String requiredType = Optional.of(ex.getTargetType())\r
+                .map(typeDescriptor -> typeDescriptor.getType().getSimpleName())\r
+                .orElse(TIPO_DESCONHECIDO);\r
+        String detail = String.format(\"O valor '%s' fornecido é inválido. Esperava-se um valor do tipo '%s'.\", invalidValue, requiredType);\r
+\r
+        return new ProblemDetails(title, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), detail, request.getRequestURI());\r
+    }\r
+}
+```
+</file>
+
+<reminder>
+When using the edit_file tool, avoid repeating existing code, instead use a line comment with `...existing code...` to represent regions of unchanged code.
+</reminder>
+<prompt>
+You are an Azure Java Migration AI Assistant specializing in cloud platform transition, you are responsible to change the code in the project to Azure following below steps\r
+1) Check the dependencies definition in current project (pom.xml or gradle setting) if any dependencies is not supported in azure, if not, replace Azure SDK equivalents. Please be awared to add the Azure SDK with the same framework. for example, if the code before change use spring, the added Azure SDK equivalents need use the spring.\r
+2) Change the Java code to used the azure SDK equivalents.\r
+3) Check the configuration to adapt the azure sdk equivalents.\r
+4) Check the changed file and Get any compile or lint errors, if there is any error, fix it
+</prompt>"
     },
     {
       "role": "assistant",
@@ -24,7 +325,8 @@
     },
     {
       "role": "tool",
-      "content": "1 total results\nc:\\projects\\eventostec-backend\\pom.xml",
+      "content": "1 total results
+c:\\projects\\eventostec-backend\\pom.xml",
       "tool_call_id": "call_fuE9Gqmo0vh6yJx1VBtu4EJd"
     },
     {
@@ -43,17 +345,185 @@
     },
     {
       "role": "tool",
-      "content": "```\n// filepath: c:\\projects\\eventostec-backend\\pom.xml\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n\t\t xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r\n\t<modelVersion>4.0.0</modelVersion>\r\n\t<parent>\r\n\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t<artifactId>spring-boot-starter-parent</artifactId>\r\n\t\t<version>3.3.4</version>\r\n\t\t<relativePath/>\r\n\t</parent>\r\n\t<groupId>com.eventostec</groupId>\r\n\t<artifactId>api</artifactId>\r\n\t<version>0.0.1-SNAPSHOT</version>\r\n\t<name>api</name>\r\n\t<description>Backend for eventos tec</description>\r\n\t<properties>\r\n\t\t<java.version>21</java.version>\r\n\t\t<mapstruct.version>1.4.2.Final</mapstruct.version>\r\n\t\t<mapstruct-lombok.version>0.2.0</mapstruct-lombok.version>\r\n\t</properties>\r\n\t<dependencies>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-data-jpa</artifactId>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-web</artifactId>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-validation</artifactId>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-devtools</artifactId>\r\n\t\t\t<scope>runtime</scope>\r\n\t\t\t<optional>true</optional>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.postgresql</groupId>\r\n\t\t\t<artifactId>postgresql</artifactId>\r\n\t\t\t<scope>runtime</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.projectlombok</groupId>\r\n\t\t\t<artifactId>lombok</artifactId>\r\n\t\t\t<optional>true</optional>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t<artifactId>spring-boot-starter-test</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.flywaydb</groupId>\r\n\t\t\t<artifactId>flyway-core</artifactId>\r\n\t\t\t<version>9.8.1</version>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>com.h2database</groupId>\r\n\t\t\t<artifactId>h2</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.mockito</groupId>\r\n\t\t\t<artifactId>mockito-core</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.mockito</groupId>\r\n\t\t\t<artifactId>mockito-junit-jupiter</artifactId>\r\n\t\t\t<scope>test</scope>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>software.amazon.awssdk</groupId>\r\n\t\t\t<artifactId>s3</artifactId>\r\n\t\t\t<version>2.26.7</version>\r\n\t\t</dependency>\r\n\t\t<dependency>\r\n\t\t\t<groupId>org.mapstruct</groupId>\r\n\t\t\t<artifactId>mapstruct</artifactId>\r\n\t\t\t<version>${mapstruct.version}</version>\r\n\t\t</dependency>\r\n\t</dependencies>\r\n\r\n\t<build>\r\n\t\t<plugins>\r\n\t\t\t<plugin>\r\n\t\t\t\t<groupId>org.apache.maven.plugins</groupId>\r\n\t\t\t\t<artifactId>maven-compiler-plugin</artifactId>\r\n\t\t\t\t<version>3.13.0</version>\r\n\t\t\t\t<configuration>\r\n\t\t\t\t\t<source>21</source>\r\n\t\t\t\t\t<target>21</target>\r\n\t\t\t\t\t<annotationProcessorPaths>\r\n\t\t\t\t\t\t<path>\r\n\t\t\t\t\t\t\t<groupId>org.mapstruct</groupId>\r\n\t\t\t\t\t\t\t<artifactId>mapstruct-processor</artifactId>\r\n\t\t\t\t\t\t\t<version>${mapstruct.version}</version>\r\n\t\t\t\t\t\t</path>\r\n\t\t\t\t\t</annotationProcessorPaths>\r\n\t\t\t\t</configuration>\r\n\t\t\t</plugin>\r\n\t\t\t<plugin>\r\n\t\t\t\t<groupId>org.springframework.boot</groupId>\r\n\t\t\t\t<artifactId>spring-boot-maven-plugin</artifactId>\r\n\t\t\t\t<configuration>\r\n\t\t\t\t\t<excludes>\r\n\t\t\t\t\t\t<exclude>\r\n\t\t\t\t\t\t\t<groupId>org.projectlombok</groupId>\r\n\t\t\t\t\t\t\t<artifactId>lombok</artifactId>\r\n\t\t\t\t\t\t</exclude>\r\n\t\t\t\t\t</excludes>\r\n\t\t\t\t</configuration>\r\n\t\t\t</plugin>\r\n\t\t\t<plugin>\r\n\t\t\t\t<groupId>org.jacoco</groupId>\r\n\t\t\t\t<artifactId>jacoco-maven-plugin</artifactId>\r\n\t\t\t\t<version>0.8.11</version>\r\n\t\t\t\t<executions>\r\n\t\t\t\t\t<execution>\r\n\t\t\t\t\t\t<goals>\r\n\t\t\t\t\t\t\t<goal>prepare-agent</goal>\r\n\t\t\t\t\t\t</goals>\r\n\t\t\t\t\t</execution>\r\n\t\t\t\t\t<execution>\r\n\t\t\t\t\t\t<id>report</id>\r\n\t\t\t\t\t\t<phase>verify</phase>\r\n\t\t\t\t\t\t<goals>\r\n\t\t\t\t\t\t\t<goal>report</goal>\r\n\t\t\t\t\t\t</goals>\r\n\t\t\t\t\t</execution>\r\n\t\t\t\t</executions>\r\n\t\t\t\t<configuration>\r\n\t\t\t\t\t<outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>\r\n\t\t\t\t</configuration>\r\n\t\t\t</plugin>\r\n\t\t</plugins>\r\n\t</build>\r\n</project>\n```",
+      "content": "```
+// filepath: c:\\projects\\eventostec-backend\\pom.xml
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r
+<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r
+     xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r
+  <modelVersion>4.0.0</modelVersion>\r
+  <parent>\r
+    <groupId>org.springframework.boot</groupId>\r
+    <artifactId>spring-boot-starter-parent</artifactId>\r
+    <version>3.3.4</version>\r
+    <relativePath/>\r
+  </parent>\r
+  <groupId>com.eventostec</groupId>\r
+  <artifactId>api</artifactId>\r
+  <version>0.0.1-SNAPSHOT</version>\r
+  <name>api</name>\r
+  <description>Backend for eventos tec</description>\r
+  <properties>\r
+    <java.version>21</java.version>\r
+    <mapstruct.version>1.4.2.Final</mapstruct.version>\r
+    <mapstruct-lombok.version>0.2.0</mapstruct-lombok.version>\r
+  </properties>\r
+  <dependencies>\r
+    <dependency>\r
+      <groupId>org.springframework.boot</groupId>\r
+      <artifactId>spring-boot-starter-data-jpa</artifactId>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.springframework.boot</groupId>\r
+      <artifactId>spring-boot-starter-web</artifactId>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.springframework.boot</groupId>\r
+      <artifactId>spring-boot-starter-validation</artifactId>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.springframework.boot</groupId>\r
+      <artifactId>spring-boot-devtools</artifactId>\r
+      <scope>runtime</scope>\r
+      <optional>true</optional>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.postgresql</groupId>\r
+      <artifactId>postgresql</artifactId>\r
+      <scope>runtime</scope>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.projectlombok</groupId>\r
+      <artifactId>lombok</artifactId>\r
+      <optional>true</optional>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.springframework.boot</groupId>\r
+      <artifactId>spring-boot-starter-test</artifactId>\r
+      <scope>test</scope>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.flywaydb</groupId>\r
+      <artifactId>flyway-core</artifactId>\r
+      <version>9.8.1</version>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>com.h2database</groupId>\r
+      <artifactId>h2</artifactId>\r
+      <scope>test</scope>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.mockito</groupId>\r
+      <artifactId>mockito-core</artifactId>\r
+      <scope>test</scope>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.mockito</groupId>\r
+      <artifactId>mockito-junit-jupiter</artifactId>\r
+      <scope>test</scope>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>software.amazon.awssdk</groupId>\r
+      <artifactId>s3</artifactId>\r
+      <version>2.26.7</version>\r
+    </dependency>\r
+    <dependency>\r
+      <groupId>org.mapstruct</groupId>\r
+      <artifactId>mapstruct</artifactId>\r
+      <version>${mapstruct.version}</version>\r
+    </dependency>\r
+  </dependencies>\r
+\r
+  <build>\r
+    <plugins>\r
+      <plugin>\r
+        <groupId>org.apache.maven.plugins</groupId>\r
+        <artifactId>maven-compiler-plugin</artifactId>\r
+        <version>3.13.0</version>\r
+        <configuration>\r
+          <source>21</source>\r
+          <target>21</target>\r
+          <annotationProcessorPaths>\r
+            <path>\r
+              <groupId>org.mapstruct</groupId>\r
+              <artifactId>mapstruct-processor</artifactId>\r
+              <version>${mapstruct.version}</version>\r
+            </path>\r
+          </annotationProcessorPaths>\r
+        </configuration>\r
+      </plugin>\r
+      <plugin>\r
+        <groupId>org.springframework.boot</groupId>\r
+        <artifactId>spring-boot-maven-plugin</artifactId>\r
+        <configuration>\r
+          <excludes>\r
+            <exclude>\r
+              <groupId>org.projectlombok</groupId>\r
+              <artifactId>lombok</artifactId>\r
+            </exclude>\r
+          </excludes>\r
+        </configuration>\r
+      </plugin>\r
+      <plugin>\r
+        <groupId>org.jacoco</groupId>\r
+        <artifactId>jacoco-maven-plugin</artifactId>\r
+        <version>0.8.11</version>\r
+        <executions>\r
+          <execution>\r
+            <goals>\r
+              <goal>prepare-agent</goal>\r
+            </goals>\r
+          </execution>\r
+          <execution>\r
+            <id>report</id>\r
+            <phase>verify</phase>\r
+            <goals>\r
+              <goal>report</goal>\r
+            </goals>\r
+          </execution>\r
+        </executions>\r
+        <configuration>\r
+          <outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>\r
+        </configuration>\r
+      </plugin>\r
+    </plugins>\r
+  </build>\r
+</project>
+```",
       "tool_call_id": "call_RGHQZplq9qJKFrLR3FAXrPH6"
     },
     {
       "role": "assistant",
-      "content": "The `pom.xml` file includes dependencies for Spring Boot, PostgreSQL, Flyway, H2, Mockito, and AWS SDK for S3. To migrate to Azure, we need to replace the AWS SDK with the Azure SDK equivalents.\n\n### Steps to Migrate to Azure:\n\n1. **Replace AWS SDK with Azure SDK:**\n   - Remove the AWS SDK dependency.\n   - Add Azure Storage SDK dependency.\n\n2. **Update Java Code:**\n   - Modify the code to use Azure Storage SDK instead of AWS S3.\n\n3. **Update Configuration:**\n   - Update the configuration files to include Azure Storage settings.\n\nLet's start by updating the `pom.xml` file to replace the AWS SDK with the Azure Storage SDK.\n\n### Update `pom.xml`:\n\nWe will remove the AWS SDK dependency and add the Azure Storage SDK dependency.\n\nI'll make these changes now.",
+      "content": "The `pom.xml` file includes dependencies for Spring Boot, PostgreSQL, Flyway, H2, Mockito, and AWS SDK for S3. To migrate to Azure, we need to replace the AWS SDK with the Azure SDK equivalents.
+
+### Steps to Migrate to Azure:
+
+1. **Replace AWS SDK with Azure SDK:**
+   - Remove the AWS SDK dependency.
+   - Add Azure Storage SDK dependency.
+
+2. **Update Java Code:**
+   - Modify the code to use Azure Storage SDK instead of AWS S3.
+
+3. **Update Configuration:**
+   - Update the configuration files to include Azure Storage settings.
+
+Let's start by updating the `pom.xml` file to replace the AWS SDK with the Azure Storage SDK.
+
+### Update `pom.xml`:
+
+We will remove the AWS SDK dependency and add the Azure Storage SDK dependency.
+
+I'll make these changes now.",
       "tool_calls": [
         {
           "function": {
             "name": "edit_file",
-            "arguments": "{\"code\":\"<dependency>\\n\\t<groupId>com.azure</groupId>\\n\\t<artifactId>azure-storage-blob-spring-boot-starter</artifactId>\\n\\t<version>12.14.0</version>\\n</dependency>\\n<!-- Removed AWS SDK dependency -->\",\"explanation\":\"Replace AWS SDK with Azure Storage SDK in pom.xml\",\"filePath\":\"c:\\\\projects\\\\eventostec-backend\\\\pom.xml\"}"
+            "arguments": "{\"code\":\"<dependency>\
+\  <groupId>com.azure</groupId>\
+\  <artifactId>azure-storage-blob-spring-boot-starter</artifactId>\
+\  <version>12.14.0</version>\
+</dependency>\
+<!-- Removed AWS SDK dependency -->\",\"explanation\":\"Replace AWS SDK with Azure Storage SDK in pom.xml\",\"filePath\":\"c:\\\\projects\\\\eventostec-backend\\\\pom.xml\"}"
           },
           "id": "call_7OVudH3NmHm7np0Us8eNG9fn",
           "type": "function"
@@ -67,7 +537,9 @@
     },
     {
       "role": "assistant",
-      "content": "Next, we need to update the Java code to use the Azure Storage SDK instead of the AWS S3 SDK. Let's identify the parts of the code that interact with AWS S3 and modify them to use Azure Storage.\n\nI'll search for references to `software.amazon.awssdk.s3` in the codebase to locate the relevant code.",
+      "content": "Next, we need to update the Java code to use the Azure Storage SDK instead of the AWS S3 SDK. Let's identify the parts of the code that interact with AWS S3 and modify them to use Azure Storage.
+
+I'll search for references to `software.amazon.awssdk.s3` in the codebase to locate the relevant code.",
       "tool_calls": [
         {
           "function": {
@@ -156,7 +628,9 @@
     {
       "function": {
         "name": "read_file",
-        "description": "Read the contents of a file.\n\nYou must specify the line range you're interested in, and if the file is larger, you will be given an outline of the rest of the file. If the file contents returned are insufficient for your task, you may call this tool again to retrieve more content.",
+        "description": "Read the contents of a file.
+
+You must specify the line range you're interested in, and if the file is larger, you will be given an outline of the rest of the file. If the file contents returned are insufficient for your task, you may call this tool again to retrieve more content.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -297,7 +771,10 @@
           "properties": {
             "filter": {
               "type": "string",
-              "description": "Specifies which tests to run, either\n- `all` to run all tests\n- `failed` to run failed tests\n- `last` to re-run the last set of tests",
+              "description": "Specifies which tests to run, either
+- `all` to run all tests
+- `failed` to run failed tests
+- `last` to re-run the last set of tests",
               "enum": ["all", "failed", "last"]
             }
           },
@@ -333,7 +810,25 @@
     {
       "function": {
         "name": "edit_file",
-        "description": "Edit a file in the workspace. Use this tool once per file that needs to be modified, even if there are multiple changes for a file. Generate the \"explanation\" property first. \nThe user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:\n// ...existing code...\n{ changed code }\n// ...existing code...\n{ changed code }\n// ...existing code...\n\nHere is an example of how you should use format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}\n",
+        "description": "Edit a file in the workspace. Use this tool once per file that needs to be modified, even if there are multiple changes for a file. Generate the \"explanation\" property first. 
+The user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.
+Avoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:
+// ...existing code...
+{ changed code }
+// ...existing code...
+{ changed code }
+// ...existing code...
+
+Here is an example of how you should use format an edit to an existing Person class:
+class Person {
+  // ...existing code...
+  age: number;
+  // ...existing code...
+  getAge() {
+    return this.age;
+  }
+}
+",
         "parameters": {
           "type": "object",
           "properties": {
@@ -347,7 +842,25 @@
             },
             "code": {
               "type": "string",
-              "description": "The code change to apply to the file. \nThe user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.\nAvoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:\n// ...existing code...\n{ changed code }\n// ...existing code...\n{ changed code }\n// ...existing code...\n\nHere is an example of how you should use format an edit to an existing Person class:\nclass Person {\n\t// ...existing code...\n\tage: number;\n\t// ...existing code...\n\tgetAge() {\n\t\treturn this.age;\n\t}\n}\n"
+              "description": "The code change to apply to the file. 
+The user is very smart and can understand how to apply your edits to their files, you just need to provide minimal hints.
+Avoid repeating existing code, instead use comments to represent regions of unchanged code. The user prefers that you are as concise as possible. For example:
+// ...existing code...
+{ changed code }
+// ...existing code...
+{ changed code }
+// ...existing code...
+
+Here is an example of how you should use format an edit to an existing Person class:
+class Person {
+  // ...existing code...
+  age: number;
+  // ...existing code...
+  getAge() {
+    return this.age;
+  }
+}
+"
             }
           },
           "required": ["explanation", "filePath", "code"]

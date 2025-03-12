@@ -1,0 +1,47 @@
+# Please follow the below guideline to migrate the project for scenario migrate the project from AWS s3 to azure storage account
+
+## First Step 
+Below is the files need be changed and related rules can be applied to the file, you can apply the related rules of one file into the file in batch, you can call migration_change_code tools to get code change by file and rules
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<fileChanges>
+  <fileRuleMap>
+    <file>c:\projects\java-migration-examples\cloudSec\src\main\java\com\common\aws\S3.java</file>
+    <rules>Migrate S3clientBuilder to BlobServiceClientBuilder</rules>
+    <rules>Migrate S3client getObject to azure blob storage download</rules>
+    <rules>Migrate S3client listBuckets to azure blob storage containerClient.list</rules>
+    <rules>Migrate S3client listObject to azure blob storage listBlobs</rules>
+    <rules>Migrate S3client putObject to azure blob storage upload</rules>
+    <rules>Migrate S3Object to azure blob storage BlobItem</rules>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\projects\java-migration-examples\cloudSec\src\main\java\com\common\huawei\OBS.java</file>
+    <rules>Migrate S3client listBuckets to azure blob storage containerClient.list</rules>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\projects\java-migration-examples\cloudSec\src\main\java\com\common\aliyun\product\OSS.java</file>
+    <rules>Migrate S3client listBuckets to azure blob storage containerClient.list</rules>
+    <rules>Migrate S3client putObject to azure blob storage upload</rules>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\projects\java-migration-examples\cloudSec\src\main\java\com\common\tencent\product\COS.java</file>
+    <rules>Migrate S3client listBuckets to azure blob storage containerClient.list</rules>
+    <rules>Migrate S3client putObject to azure blob storage upload</rules>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\projects\java-migration-examples\cloudSec\pom.xml</file>
+    <rules>Migrate S3 pom dependency to azure blob storage pom dependency</rules>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\projects\java-migration-examples\cloudSec\src\main\java\com\common\Bucket.java</file>
+    <rules>Migrate S3Object to azure blob storage BlobItem</rules>
+  </fileRuleMap>
+</fileChanges>
+
+## Second Step 
+1) Update the dependency files: Search for the Java dependency file in the project, including the pom.xml or Gradle settings. Update the dependency for the scenario migrate the project from AWS s3 to azure storage account, remove the dependencies about migrating from, and add the dependencies about migrate to
+ 2) Update the Java Code: Search the Java code across the entire project for the scenario migrate the project from AWS s3 to azure storage account. Replace the APIs about migrating from with the APIs about migrateing to.
+ 3) Update the configuration code: Search the configuration files in the project, typically properties/yaml/yml files, and change the configuration for the scenario migrate the project from AWS s3 to azure storage account. Modify them accordingly: remove the configuration about migrating from, and add the configuration about migrating to.
+ 
+
+## Last Step 
+Check the build error, if there is any build eror, fix it

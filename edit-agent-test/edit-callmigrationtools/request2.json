@@ -1,0 +1,34 @@
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
+<fileChanges>
+  <fileRuleMap>
+    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\aws\\S3.java</file>
+    <rule>Migrate S3clientBuilder to BlobServiceClientBuilder</rule>
+    <rule>Migrate S3client getObject to azure blob storage download</rule>
+    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>
+    <rule>Migrate S3client listObject to azure blob storage listBlobs</rule>
+    <rule>Migrate S3client putObject to azure blob storage upload</rule>
+    <rule>Migrate S3Object to azure blob storage BlobItem</rule>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\huawei\\OBS.java</file>
+    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\aliyun\\product\\OSS.java</file>
+    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>
+    <rule>Migrate S3client putObject to azure blob storage upload</rule>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\tencent\\product\\COS.java</file>
+    <rule>Migrate S3client listBuckets to azure blob storage containerClient.list</rule>
+    <rule>Migrate S3client putObject to azure blob storage upload</rule>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\\projects\\java-migration-examples\\cloudSec\\pom.xml</file>
+    <rule>Migrate S3 pom dependency to azure blob storage pom dependency</rule>
+  </fileRuleMap>
+  <fileRuleMap>
+    <file>c:\\projects\\java-migration-examples\\cloudSec\\src\\main\\java\\com\\common\\Bucket.java</file>
+    <rule>Migrate S3Object to azure blob storage BlobItem</rule>
+  </fileRuleMap>
+</fileChanges>"
